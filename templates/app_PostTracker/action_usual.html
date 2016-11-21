@@ -1,12 +1,11 @@
 <!--# Action Usual #-->
-<button class="btn btn-primary" data-toggle="modal" data-target="#about">
-	<span class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#>
-</button>
+<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#about">
+<i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#>
+</a>
 
 <a href="?mode=update_statuses" class="btn btn-primary" title="Refresh">
 <i class="glyphicon glyphicon-refresh"></i> Refresh
 </a>
-
 	<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
 		<!-- <div id="about" class="modal hide"> -->
 		<div class="modal-dialog">
@@ -50,12 +49,16 @@
 	[#if RESULT#]
 	<!-- search results (list) -->
 	<form action="?" method="post" name="frmList_telegram" style="padding:0px" class="form">
+		<br>
 		<div class="panel-group" id="accordion">
 		[#begin RESULT#]
-			<div class="panel panel-info">
-				<div class="panel-heading">
+			<div class="panel panel-default">
+				<div class="panel-heading clearfix">
 					<a data-toggle="collapse" data-parent="#accordion" href="#track_[#ID#]">[#NAME#]</a>
-					<div class="pull-right">
+					[#if LAST_STATUS!=""#]
+						[#LAST_DATE#] - [#LAST_STATUS#]
+					[#endif#]
+					<div class="btn-group pull-right">
 						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Arhive">
 							<i class="glyphicon glyphicon-inbox"></i>
 						</a>
@@ -65,8 +68,15 @@
 					</div>
 				</div>
 				<div class="panel-body collapse" id="track_[#ID#]">
-					Track: [#TRACK#]<br>
-					[#INFO#]
+					Track: <a href="[#TRACK_URL#]">[#TRACK#]</a><br>
+					[#begin STATUSES#]
+						[#DATE_STATUS#] - [#STATUS_INFO#] 
+						[#if LOCATION!=""#]
+							([#LOCATION_ZIP#] [#LOCATION#])
+						[#endif#]
+						<br>
+					[#end STATUSES#]
+		
 				</div>
 			</div>
 		[#end RESULT#]

@@ -150,6 +150,9 @@ function usual(&$out) {
         $rec['TRACK']=$track;
         global $track_url;
         $rec['TRACK_URL']=$track_url;
+        global $waitday;
+        $rec['WAIT_DAY']=$waitday;
+        $rec['CREATED'] = date ("Y-m-d H:i:s");
         
         $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
         $this->redirect("?");
@@ -168,23 +171,14 @@ function usual(&$out) {
         $this->redirect("?");
     }else{
         // SEARCH RESULTS  
-        $res=SQLSelect("SELECT *, 'No status' AS INFO FROM pt_track where ARCHIVE=0");
+        $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=0");
         if ($res[0]['ID']) {  
             paging($res, 20, $out); // search result paging
             $total=count($res);
             for($i=0;$i<$total;$i++) {
                 // some action for every record if required
                 $res_info=SQLSelect("SELECT * FROM pt_status WHERE TRACK_ID='" . $res[$i]['ID'] . "'");
-                $total_info=count($res_info);
-                if ($total_info>0)
-                {
-                    $res[$i]['INFO'] = "";
-                    foreach($res_info as $info) {
-                        $res[$i]['INFO'] .= $info['DATE_STATUS']." - ".$info['STATUS_INFO']."<br>";
-                    }
-                }
-                else
-                    $res[$i]['INFO'] = "No status";
+                $res[$i]['STATUSES'] = $res_info;
             }
             $out['RESULT']=$res;
         }    
@@ -232,9 +226,13 @@ function updateStatuses() {
                     echo 'Add new status '.$status['STATUS_INFO']."\n";
                     //add new
                     SQLInsert("pt_status", $status);
+                    
+                    $res[$i]['LAST_DATE'] = $status['DATE_STATUS'];
+                    $res[$i]['LAST_STATUS'] = $status['STATUS_INFO'];
                 }
             }
-            
+            $res[$i]['LAST_CHECKED'] = date ("Y-m-d H:i:s");
+            SQLUpdate('pt_track', $res[$i]);
         }
     
     }
@@ -268,8 +266,10 @@ pt_track: NAME varchar(255) NOT NULL DEFAULT ''
 pt_track: TRACK varchar(255) NOT NULL DEFAULT ''
 pt_track: TRACK_URL varchar(255) DEFAULT ''
 pt_track: CREATED datetime
+pt_track: WAIT_DAY int(3) DEFAULT '0'
 pt_track: LAST_CHECKED datetime
 pt_track: LAST_STATUS text
+pt_track: LAST_DATE datetime
 pt_track: ARCHIVE boolean NOT NULL DEFAULT FALSE
         
 pt_status: ID int(10) unsigned NOT NULL auto_increment
