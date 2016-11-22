@@ -17,8 +17,6 @@ try
 {
    $PostTracker = new app_PostTracker();
    $result = $PostTracker->updateStatuses();
-   if (!$result)
-      throw new Exception("Check track error");
 }
 catch(Exception $e)
 {

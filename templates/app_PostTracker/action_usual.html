@@ -30,8 +30,12 @@
 					<div class="form-group">
 						<label class="control-label">Track URL</label>
 						<div class="controls"><input  type="text" name="track_url" value="[#TRACK_URL#]" class="form-control input"></div>
-					</div>		
-					
+					</div>
+					<!-- Wait dispute -->
+					<div class="form-group">
+						<label class="control-label">Day to dispute</label>
+						<div class="controls"><input  type="text" name="waitday" value="[#WAIT_DAY#]" class="form-control input"></div>
+					</div>
 				</div>
 				
 				<div class="modal-footer">
@@ -57,6 +61,12 @@
 					<a data-toggle="collapse" data-parent="#accordion" href="#track_[#ID#]">[#NAME#]</a>
 					[#if LAST_STATUS!=""#]
 						[#LAST_DATE#] - [#LAST_STATUS#]
+					[#endif#]
+					[#if SENDING_DAY!=""#]
+						<span class="label label-default">On way [#SENDING_DAY#]</span>
+					[#endif#]
+					[#if DISPUTE_DAY!=""#]
+						<span class="label label-[#DISPUTE_STATE#]">Day to dispute [#DISPUTE_DAY#]</span>
 					[#endif#]
 					<div class="btn-group pull-right">
 						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Arhive">

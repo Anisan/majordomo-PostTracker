@@ -14,7 +14,7 @@ Post Tracker<br>
 			</div>
 			<div class="modal-body">
 				<p class="float-left"> Модуль отслеживания почтовых отправлений.<br>
-				Обсуждение модуля <a href="http://majordomo.smartliving.ru/forum/viewtopic.php?f=5" target="_blank">здесь</a>.<br>
+				Обсуждение модуля <a href="http://majordomo.smartliving.ru/forum/viewtopic.php?f=5&t=3385" target="_blank">здесь</a>.<br>
 				</p>
 				<hr size="1">
 				<div class="float-right">
@@ -70,7 +70,7 @@ Post Tracker<br>
 		<div class="controls">
 			<select name="provider" class="form-control" id="provider" onchange="OnSelectConType(this)">
 				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24</option>
-				<option value="0"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option>
+				<!--option value="0"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option-->
 				<option value="1"[#if PROVIDER=="2"#] selected[#endif#]>Other</option>   
 			</select>
 		</div>
@@ -99,7 +99,28 @@ Post Tracker<br>
 <script type="text/javascript">  
 	OnSelectConType ( document.getElementById('provider') );
 </script> 
-
+<div class="form-group ">
+	<label class="col-lg-4 control-label" for="inputTitle">Execute new status:</label>
+	<div class="col-lg-5">
+		<select name="script_newstatus_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
+			<option value="0">
+			[#begin SCRIPTS#]
+			<option value="[#ID#]"[#if ID="<#SCRIPT_NEWSTATUS_ID#>"#] selected[#endif#]>[#TITLE#]
+			[#end SCRIPTS#]
+		</select>
+	</div>
+</div> 
+<div class="form-group ">
+	<label class="col-lg-4 control-label" for="inputTitle">Execute dispute time:</label>
+	<div class="col-lg-5">
+		<select name="script_dispute_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
+			<option value="0">
+			[#begin SCRIPTS#]
+			<option value="[#ID#]"[#if ID="<#SCRIPT_DISPUTE_ID#>"#] selected[#endif#]>[#TITLE#]
+			[#end SCRIPTS#]
+		</select>
+	</div>
+</div>
 <div class="form-actions">
 <button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
 <input type="hidden" name="view_mode" value="update_settings">
