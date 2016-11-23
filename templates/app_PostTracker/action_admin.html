@@ -58,7 +58,7 @@ Post Tracker<br>
 	function OnSelectConType (select) {    
 	    var fDiv0 = document.getElementById('set_track24');
 		var fDiv1 = document.getElementById('set_gdeposylka');
-		var fDiv2 = document.getElementById('set_other');
+		var fDiv2 = document.getElementById('set_russianpost');
 		fDiv0.style.display = (select.selectedIndex == 0) ? 'block' : 'none';
 		fDiv1.style.display = (select.selectedIndex == 1) ? 'block' : 'none';
 		fDiv2.style.display = (select.selectedIndex == 2) ? 'block' : 'none';
@@ -70,8 +70,8 @@ Post Tracker<br>
 		<div class="controls">
 			<select name="provider" class="form-control" id="provider" onchange="OnSelectConType(this)">
 				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24</option>
-				<!--option value="0"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option-->
-				<option value="1"[#if PROVIDER=="2"#] selected[#endif#]>Other</option>   
+				<option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option>
+				<option value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post</option>   
 			</select>
 		</div>
 	</div>
@@ -91,10 +91,15 @@ Post Tracker<br>
 			<div class="controls"><input type="text" name="gp_apikey" value="<#GP_APIKEY#>" class="form-control"></div>
 		</div>
 	</div>
-	<div class="form-group" id="set_other">
-		<label class="control-label">
-			Other provider ...
-		</label>
+	<div id="set_russianpost">
+		<div class="form-group">
+			<label class="control-label">Login:</label>
+			<div class="controls"><input type="text" name="rp_login" value="<#RP_LOGIN#>" class="form-control"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label">Password:</label>
+			<div class="controls"><input type="text" name="rp_password" value="<#RP_PASSWORD#>" class="form-control"></div>
+		</div>
 	</div>
 <script type="text/javascript">  
 	OnSelectConType ( document.getElementById('provider') );

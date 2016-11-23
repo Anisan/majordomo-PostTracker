@@ -115,6 +115,8 @@ function admin(&$out) {
     $out['GP_APIKEY'] = $this->config['GP_APIKEY'];
     $out['TR24_APIKEY'] = $this->config['TR24_APIKEY'];
     $out['TR24_DOMAIN'] = $this->config['TR24_DOMAIN'];
+    $out['RP_LOGIN'] = $this->config['RP_LOGIN'];
+    $out['RP_PASSWORD'] = $this->config['RP_PASSWORD'];
     $out['PROVIDER'] = $this->config['PROVIDER'];
     $out['SCRIPT_NEWSTATUS_ID'] = $this->config['SCRIPT_NEWSTATUS_ID'];
     $out['SCRIPT_DISPUTE_ID'] = $this->config['SCRIPT_DISPUTE_ID'];
@@ -125,6 +127,10 @@ function admin(&$out) {
             $this->config['PROVIDER'] = $provider;
             global $gp_apikey;
             $this->config['GP_APIKEY'] = $gp_apikey;
+            global $rp_login;
+            $this->config['RP_LOGIN'] = $rp_login;
+            global $rp_password;
+            $this->config['RP_PASSWORD'] = $rp_password;
             global $tr24_apikey;
             $this->config['TR24_APIKEY'] = $tr24_apikey;
             global $tr24_domain;
@@ -225,7 +231,11 @@ function updateStatuses() {
                 require_once("./modules/app_PostTracker/provider/gdeposylka.php");
                 $provider = new Gdeposylka($this->config['GP_APIKEY']);
                 break;
-            case 2: // Other
+            case 2: // RussianPost
+                require_once("./modules/app_PostTracker/provider/russianpost.php");
+                $provider = new RussianPost($this->config['RP_LOGIN'],$this->config['RP_PASSWORD']);
+                break;
+            case 3: // Other
                 return;
                 break;
         }
