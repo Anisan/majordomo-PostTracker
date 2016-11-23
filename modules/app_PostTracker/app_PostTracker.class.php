@@ -154,8 +154,20 @@ function admin(&$out) {
 * @access public
 */
 function usual(&$out) {
-    if ($this->mode=='add_track') { 
-        $rec = array();
+    global $track_info;
+    if ($track_info)
+    {
+        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $track_info . "'");
+        header("HTTP/1.0: 200 OK\n");
+        header('Content-Type: text/html; charset=utf-8');
+        echo json_encode($rec);
+        exit;
+    }
+    if ($this->mode=='archive') {$out['VIEW_MODE']="archive";$this->view_mode = "archive";}
+    if ($this->mode=='active') $out['VIEW_MODE']="";
+    if ($this->mode=='add_track' || $this->mode=='edit_track') { 
+        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
+        
         global $name;
         $rec['NAME']=$name;
         global $track;
@@ -164,9 +176,14 @@ function usual(&$out) {
         $rec['TRACK_URL']=$track_url;
         global $waitday;
         $rec['WAIT_DAY']=$waitday;
-        $rec['CREATED'] = date ("Y-m-d H:i:s");
         
-        $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
+        if ($rec['ID']) {
+            SQLUpdate(pt_track, $rec); // update
+        }
+        else{
+            $rec['CREATED'] = date ("Y-m-d H:i:s");
+            $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
+        }
         $this->redirect("?");
     }
     else if ($this->mode=='del_track') {
@@ -183,7 +200,10 @@ function usual(&$out) {
         $this->redirect("?");
     }else{
         // SEARCH RESULTS  
-        $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=0");
+        if($this->view_mode == 'archive')
+            $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=1");
+        else
+            $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=0");
         if ($res[0]['ID']) {  
             paging($res, 20, $out); // search result paging
             $total=count($res);
@@ -283,6 +303,7 @@ function updateStatuses() {
                     $params=array();
                     $params['NAME']=$res[$i]['NAME'];
                     $params['TRACK']=$res[$i]['TRACK'];
+                    $params['TRACK_URL']=$res[$i]['TRACK_URL'];
                     $params['DATE']=$last_status_date;
                     $params['STATUS']=$last_status_info;
                     runScript($this->config['SCRIPT_NEWSTATUS_ID'], $params);
@@ -303,13 +324,13 @@ function updateStatuses() {
                 echo $start_day."\n";
                 if ($disp < 7 && (strtotime($start_day)>strtotime($res[$i]['LAST_SEND_WARNING'])))
                 {                    
-                    echo "aasdfasdf\n";
                     // LAST_SEND_WARNING
                     // exec script (one time on day)
                     if ($this->config['SCRIPT_DISPUTE_ID']) {
                         $params=array();
                         $params['NAME']=$res[$i]['NAME'];
                         $params['TRACK']=$res[$i]['TRACK'];
+                        $params['TRACK_URL']=$res[$i]['TRACK_URL'];
                         $params['DATE']=$last_status_date;
                         $params['STATUS']=$last_status_info;
                         $params['DISPUTE']=$disp;

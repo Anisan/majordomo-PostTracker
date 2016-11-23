@@ -1,54 +1,101 @@
 <!--# Action Usual #-->
-<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#about">
+[#if VIEW_MODE!="archive"#]
+<a href="#" class="btn btn-primary" onClick="ChangeForm(false,0);" data-toggle="modal" data-target="#track_info">
 <i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#>
 </a>
 
 <a href="?mode=update_statuses" class="btn btn-primary" title="Refresh">
 <i class="glyphicon glyphicon-refresh"></i> Refresh
 </a>
-	<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
+<a href="?mode=archive" class="btn btn-primary" title="Archive">
+<i class="glyphicon glyphicon-inbox"></i> Archive
+</a>
+[#else#]
+<a href="?mode=active" class="btn btn-primary" title="Back">
+<i class="glyphicon glyphicon-arrow-left"></i> Back
+</a>
+[#endif#]
+<script type="text/javascript">
+	function ChangeForm(edit, id) {
+		document.getElementById('form_title').innerHTML  = (edit) ? 'Edit track' : 'Add track';
+		document.getElementById('mode').value = (edit) ? "edit_track":"add_track";
+		document.getElementById('id').value = "0";
+		if (edit)
+		{
+			var url="?track_info="+ id;
+			$.ajax({  
+				url: url,  
+				cache: false,  
+				success: function(json){  
+				    var rec = JSON.parse(json)
+					document.getElementById('id').value = rec['ID'];
+					document.getElementById('name').value = rec['NAME'];  
+					document.getElementById('track').value = rec['TRACK'];  
+					document.getElementById('track_url').value = rec['TRACK_URL'];  
+					document.getElementById('waitday').value = rec['WAIT_DAY'];  
+				}  
+			});  
+
+			//document.getElementById('name').value = "test";
+		}
+		else
+		{
+			document.getElementById('name').value = "";
+			document.getElementById('track').value = "";
+			document.getElementById('track_url').value = "";
+			document.getElementById('waitday').value = "50";
+		}
+	}
+</script> 
+	<div class="modal fade" id="track_info" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
 		<!-- <div id="about" class="modal hide"> -->
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Add track</h4>
+					<h4 class="modal-title" id="form_title">Add track</h4>
 				</div>
 				<form action="?" method="post" enctype="multipart/form-data" name="frmEdit">
 				<div class="modal-body">
 					<!-- Name -->
 					<div class="form-group">
 						<label class="control-label">Name</label>
-						<div class="controls"><input  type="text" name="name" value="[#NAME#]" class="form-control input"></div>
+						<div class="controls"><input id="name" type="text" name="name" value="[#NAME#]" class="form-control input"></div>
 					</div>
 					<!-- Track -->
 					<div class="form-group">
 						<label class="control-label">Track number</label>
-						<div class="controls"><input  type="text" name="track" value="[#TRACK#]" class="form-control input"></div>
+						<div class="controls"><input id="track" type="text" name="track" value="[#TRACK#]" class="form-control input"></div>
 					</div>
 					<!-- Track URL -->
 					<div class="form-group">
 						<label class="control-label">Track URL</label>
-						<div class="controls"><input  type="text" name="track_url" value="[#TRACK_URL#]" class="form-control input"></div>
+						<div class="controls"><input id="track_url" type="text" name="track_url" value="[#TRACK_URL#]" class="form-control input"></div>
 					</div>
 					<!-- Wait dispute -->
 					<div class="form-group">
 						<label class="control-label">Day to dispute</label>
-						<div class="controls"><input  type="text" name="waitday" value="[#WAIT_DAY#]" class="form-control input"></div>
+						<div class="controls"><input id="waitday" type="text" name="waitday" value="[#WAIT_DAY#]" class="form-control input"></div>
 					</div>
 				</div>
 				
 				<div class="modal-footer">
 					<button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
 					<a href="#" class="btn btn-default" data-dismiss="modal"><#LANG_CANCEL#></a>
-							
 				</div>
-				<input type="hidden" name="mode" value="add_track">
+				<input id="id" type="hidden" name="id" value="0">
+				<input id="mode" type="hidden" name="mode" value="add_track">
 				</form>
 			</div>
 		</div>
 	</div>
-
+<style type="text/css">
+.panel-heading{
+  border:1px solid #ccc;
+  padding:2px;
+  margin:0;
+}
+</style>
 	<!-- results -->
 	[#if RESULT#]
 	<!-- search results (list) -->
@@ -57,32 +104,39 @@
 		<div class="panel-group" id="accordion">
 		[#begin RESULT#]
 			<div class="panel panel-default">
-				<div class="panel-heading clearfix">
-					<a data-toggle="collapse" data-parent="#accordion" href="#track_[#ID#]">[#NAME#]</a>
+				<div class="panel-heading">
+					<h6><a data-toggle="collapse" data-parent="#accordion" href="#track_[#ID#]">[#NAME#]</a>
 					[#if LAST_STATUS!=""#]
 						[#LAST_DATE#] - [#LAST_STATUS#]
 					[#endif#]
 					[#if SENDING_DAY!=""#]
 						<span class="label label-default">On way [#SENDING_DAY#]</span>
 					[#endif#]
-					[#if DISPUTE_DAY!=""#]
+					[#if DISPUTE_DAY!="" && ARCHIVE=="0"#]
 						<span class="label label-[#DISPUTE_STATE#]">Day to dispute [#DISPUTE_DAY#]</span>
 					[#endif#]
+					[#if ARCHIVE=="1"#]
+					<span class="label label-warning">Archived</span>
+					[#endif#]
 					<div class="btn-group pull-right">
-						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Arhive">
+						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Archive">
 							<i class="glyphicon glyphicon-inbox"></i>
+						</a>
+						<a href="#" onClick="ChangeForm(true,[#ID#]);" class="btn btn-default btn-sm" title="Edit" data-toggle="modal" data-target="#track_info">
+							<i class="glyphicon glyphicon-edit"></i>
 						</a>
 						<a href="?mode=del_track&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>">
 							<i class="glyphicon glyphicon-remove"></i>
 						</a>
 					</div>
+					</h6>
 				</div>
 				<div class="panel-body collapse" id="track_[#ID#]">
-					Track: <a href="[#TRACK_URL#]">[#TRACK#]</a><br>
+					<h6>Track: <a href="[#TRACK_URL#]">[#TRACK#]</a></h6>
 					[#begin STATUSES#]
-						[#DATE_STATUS#] - [#STATUS_INFO#] 
+						<span class="badge">[#DATE_STATUS#]</span> [#STATUS_INFO#] 
 						[#if LOCATION!=""#]
-							([#LOCATION_ZIP#] [#LOCATION#])
+							([#LOCATION#] [#LOCATION_ZIP#] )
 						[#endif#]
 						<br>
 					[#end STATUSES#]
@@ -93,7 +147,7 @@
 		</div>
 		
 	<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
-	<input type="hidden" name="view_mode" value="multiple_telegram">
+	<input type="hidden" name="view_mode" value="[#VIEW_MODE#]">
 </form>
 <!-- / search results (list) -->
 <!-- paging -->
