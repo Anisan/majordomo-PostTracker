@@ -255,8 +255,9 @@ function updateStatuses() {
                 require_once("./modules/app_PostTracker/provider/russianpost.php");
                 $provider = new RussianPost($this->config['RP_LOGIN'],$this->config['RP_PASSWORD']);
                 break;
-            case 3: // Other
-                return;
+            case 3: // 17Track
+                require_once("./modules/app_PostTracker/provider/SeventeenTrack.php");
+                $provider = new SeventeenTrack();
                 break;
         }
         

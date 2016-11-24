@@ -59,9 +59,9 @@ Post Tracker<br>
 	    var fDiv0 = document.getElementById('set_track24');
 		var fDiv1 = document.getElementById('set_gdeposylka');
 		var fDiv2 = document.getElementById('set_russianpost');
-		fDiv0.style.display = (select.selectedIndex == 0) ? 'block' : 'none';
-		fDiv1.style.display = (select.selectedIndex == 1) ? 'block' : 'none';
-		fDiv2.style.display = (select.selectedIndex == 2) ? 'block' : 'none';
+		fDiv0.style.display = (select.value == 0) ? 'block' : 'none';
+		fDiv1.style.display = (select.value == 1) ? 'block' : 'none';
+		fDiv2.style.display = (select.value == 2) ? 'block' : 'none';
 	}
 </script> 
 <fieldset>
@@ -69,9 +69,10 @@ Post Tracker<br>
 		<label class="control-label">Provider: </label>
 		<div class="controls">
 			<select name="provider" class="form-control" id="provider" onchange="OnSelectConType(this)">
-				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24</option>
-				<option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option>
-				<option value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post</option>   
+				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24 (API)</option>
+				<!--option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka</option-->
+				<option value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post (API)</option>   
+				<option value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>   
 			</select>
 		</div>
 	</div>
