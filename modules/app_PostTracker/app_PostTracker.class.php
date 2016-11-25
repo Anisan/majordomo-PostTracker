@@ -182,19 +182,41 @@ function usual(&$out) {
         }
         else{
             $rec['CREATED'] = date ("Y-m-d H:i:s");
+            $rec['LAST_DATE'] = date ("Y-m-d H:i:s");
+            $rec['LAST_STATUS'] = "Start monitoring";
             $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
+            $status = array();
+            $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
+            $status['STATUS_INFO'] = "Add track code to module";
+            $status['TRACK_ID'] = $rec['ID'];
+            $status['PROVIDER'] = -1;
+            SQLInsert("pt_status", $status);
         }
         $this->redirect("?");
     }
     else if ($this->mode=='del_track') {
-        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
-        // some action for related tables
-        SQLExec("DELETE FROM pt_track WHERE ID='" . $rec['ID'] . "'");
-        SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $rec['ID'] . "'");
+        SQLExec("DELETE FROM pt_track WHERE ID='" . $this->id . "'");
+        SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $this->id . "'");
         $this->redirect("?");
     }else if ($this->mode=='switch_archive') {
-        SQLExec("UPDATE pt_track set ARCHIVE = 1 - ARCHIVE WHERE ID='" . $this->id . "'");
-        $this->redirect("?");
+        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
+        $status = array();
+        $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
+        $status['TRACK_ID'] = $rec['ID'];
+        $status['PROVIDER'] = -1;
+        if ($rec['ARCHIVE']==1)
+        {
+            $status['STATUS_INFO'] = "Unarchived (enable monitoring)";
+            $rec['ARCHIVE']=0;
+        }
+        else
+        {
+            $status['STATUS_INFO'] = "Archived (disable monitoring)";
+            $rec['ARCHIVE']=1;
+        }
+        SQLUpdate("pt_track", $rec);
+        SQLInsert("pt_status", $status);
+        $this->redirect("?view_mode=".$this->view_mode);
     }else if ($this->mode=='update_statuses') {
         $this->updateStatuses();
         $this->redirect("?");

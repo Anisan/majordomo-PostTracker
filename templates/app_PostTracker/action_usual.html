@@ -160,6 +160,7 @@
 						<td>[#if LOCATION!=""#]
 							[#LOCATION#] [#LOCATION_ZIP#][#endif#]</td>
 						<td>
+						[#if PROVIDER==-1#]Info[#endif#]
 						[#if PROVIDER==0#]Track24[#endif#]
 						[#if PROVIDER==1#]Gdeposylka[#endif#]
 						[#if PROVIDER==2#]Russian Post[#endif#]

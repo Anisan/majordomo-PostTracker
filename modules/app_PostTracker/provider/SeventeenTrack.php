@@ -13,8 +13,7 @@ class SeventeenTrack implements IProvider
         'X-Requested-With'=>  'XMLHttpRequest'
         ];
     
-    function __construct($apikey, $domain) {
-
+    function __construct() {
     }
     
     public function getStatus($track)
@@ -36,14 +35,17 @@ class SeventeenTrack implements IProvider
         
         $data = json_decode($server_output,true);
         //print_r($data['dat'][0]);
-        $events = $data['dat'][0]['track']['z1'];
-        //print_r($events);
-        foreach($events as $event) {
-            $status = array();
-            $status['DATE_STATUS'] = strtotime($event['a']);
-            $status['STATUS_INFO'] = $event['z'];
-            $status['LOCATION'] = $event['c'];
-            array_push($res,$status);
+        if ($data['dat'][0]['track'])
+        {
+            $events = $data['dat'][0]['track']['z1'];
+            //print_r($events);
+            foreach($events as $event) {
+                $status = array();
+                $status['DATE_STATUS'] = strtotime($event['a']);
+                $status['STATUS_INFO'] = $event['z'];
+                $status['LOCATION'] = $event['c'];
+                array_push($res,$status);
+            }
         }
         return $res;
     }
