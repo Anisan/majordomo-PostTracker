@@ -191,6 +191,8 @@ function usual(&$out) {
             $status['TRACK_ID'] = $rec['ID'];
             $status['PROVIDER'] = -1;
             SQLInsert("pt_status", $status);
+            $this->exec_script_newstatus($rec);
+            $this->updateStatusInit($rec);
         }
         $this->redirect("?");
     }
@@ -250,7 +252,6 @@ function usual(&$out) {
                     if ($disp <= 20) $res[$i]['DISPUTE_STATE'] = "warning";
                     if ($disp <= 10) $res[$i]['DISPUTE_STATE'] = "danger";
                     $res[$i]['DISPUTE_DAY'] = $disp;
-                    
                 }
             }
             $out['RESULT']=$res;
@@ -283,92 +284,120 @@ function updateStatuses() {
                 break;
         }
         
-        
         $total=count($res);
         for($i=0;$i<$total;$i++) {
-            echo $res[$i]['TRACK']."\n";
-            $statuses = $provider->getStatus($res[$i]['TRACK']);
-            // proc statuses
-            //print_r($statuses);
-            $last_status_info = "";
-            $last_status_date = "";
-            foreach($statuses as $status) {
-                $status['TRACK_ID'] = $res[$i]['ID'];
-                $status['PROVIDER'] = $this->config['PROVIDER'];
-                $status['DATE_STATUS'] = date ("Y-m-d H:i:s", $status['DATE_STATUS']);
-                // find old
-                if (isset($status['PROVIDER_ID']))
-                    $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$res[$i]['ID']." and PROVIDER_ID = '" . $status['PROVIDER_ID'] . "';");
-                else
-                    $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$res[$i]['ID']." and DATE_STATUS = '" . DBSafe($status['DATE_STATUS']) . "';");
-                if (!$find)
-                {
-                    echo 'Add new status '.$status['STATUS_INFO']."\n";
-                    //add new
-                    SQLInsert("pt_status", $status);
-                    // check date
-                    if ($status['DATE_STATUS']>$last_status_date)
-                    {
-                        $last_status_info = $status['STATUS_INFO'];
-                        $last_status_date = $status['DATE_STATUS'];
-                    }
-                }
-            }
-            $res[$i]['LAST_CHECKED'] = date ("Y-m-d H:i:s");
-            
-            //exec last new state
-            if ($last_status_info!="")
-            {
-                $res[$i]['LAST_DATE'] = $last_status_date;
-                $res[$i]['LAST_STATUS'] = $last_status_info;
-                //run script
-                if ($this->config['SCRIPT_NEWSTATUS_ID']) {
-                    $params=array();
-                    $params['NAME']=$res[$i]['NAME'];
-                    $params['TRACK']=$res[$i]['TRACK'];
-                    $params['TRACK_URL']=$res[$i]['TRACK_URL'];
-                    $params['DATE']=$last_status_date;
-                    $params['STATUS']=$last_status_info;
-                    runScript($this->config['SCRIPT_NEWSTATUS_ID'], $params);
-                } 
-            }
-            SQLUpdate('pt_track', $res[$i]);
-            
-            //check to dispute 
-            if ($res[$i]['WAIT_DAY'] && $res[$i]['LAST_DATE'])
-            {
-                echo $res[$i]['WAIT_DAY']."\n";
-                $dayDispite = $res[$i]['LAST_DATE'];
-                $diff = time()- strtotime($dayDispite);
-                $days = floor($diff / (24*60*60));
-                $disp = (int)$res[$i]['WAIT_DAY'] - $days;
-                echo $disp."\n";
-                $start_day = date("Y-m-d");
-                echo $start_day."\n";
-                if ($disp < 7 && (strtotime($start_day)>strtotime($res[$i]['LAST_SEND_WARNING'])))
-                {                    
-                    // LAST_SEND_WARNING
-                    // exec script (one time on day)
-                    if ($this->config['SCRIPT_DISPUTE_ID']) {
-                        $params=array();
-                        $params['NAME']=$res[$i]['NAME'];
-                        $params['TRACK']=$res[$i]['TRACK'];
-                        $params['TRACK_URL']=$res[$i]['TRACK_URL'];
-                        $params['DATE']=$last_status_date;
-                        $params['STATUS']=$last_status_info;
-                        $params['DISPUTE']=$disp;
-                        runScript($this->config['SCRIPT_DISPUTE_ID'], $params);
-                    } 
-                    $res[$i]['LAST_SEND_WARNING'] = date ("Y-m-d H:i:s");
-                    SQLUpdate('pt_track', $res[$i]);
-                }
-            }
-            
+            $this->updateStatus($provider,$res[$i]);
         }
-    
     }
 }
 
+function updateStatusInit($rec) {
+    $this->getConfig();
+    switch ($this->config['PROVIDER']) {
+        case 0: // track24
+                require_once("./modules/app_PostTracker/provider/track24.php");
+                $provider = new Track24($this->config['TR24_APIKEY'],$this->config['TR24_DOMAIN']);
+                break;
+        case 1: // Gdeposylka
+                require_once("./modules/app_PostTracker/provider/gdeposylka.php");
+                $provider = new Gdeposylka($this->config['GP_APIKEY']);
+                break;
+        case 2: // RussianPost
+                require_once("./modules/app_PostTracker/provider/russianpost.php");
+                $provider = new RussianPost($this->config['RP_LOGIN'],$this->config['RP_PASSWORD']);
+                break;
+        case 3: // 17Track
+                require_once("./modules/app_PostTracker/provider/SeventeenTrack.php");
+                $provider = new SeventeenTrack();
+                break;
+    }
+    $this->updateStatus($provider,$rec);
+}
+
+function updateStatus($provider,$rec) {
+    echo $rec['TRACK']."\n";
+    $statuses = $provider->getStatus($rec['TRACK']);
+    // proc statuses
+    //print_r($statuses);
+    $last_status_info = "";
+    $last_status_date = "";
+    foreach($statuses as $status) {
+        $status['TRACK_ID'] = $rec['ID'];
+        $status['PROVIDER'] = $this->config['PROVIDER'];
+        $status['DATE_STATUS'] = date ("Y-m-d H:i:s", $status['DATE_STATUS']);
+        // find old
+        if (isset($status['PROVIDER_ID']))
+            $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$rec['ID']." and PROVIDER_ID = '" . $status['PROVIDER_ID'] . "';");
+        else
+            $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$rec['ID']." and DATE_STATUS = '" . DBSafe($status['DATE_STATUS']) . "';");
+        if (!$find)
+        {
+            echo 'Add new status '.$status['STATUS_INFO']."\n";
+            //add new
+            SQLInsert("pt_status", $status);
+            // check date
+            if ($status['DATE_STATUS']>$last_status_date)
+            {
+                $last_status_info = $status['STATUS_INFO'];
+                $last_status_date = $status['DATE_STATUS'];
+            }
+        }
+    }
+    $rec['LAST_CHECKED'] = date ("Y-m-d H:i:s");
+            
+    //exec last new state
+    if ($last_status_info!="")
+    {
+        $rec['LAST_DATE'] = $last_status_date;
+        $rec['LAST_STATUS'] = $last_status_info;
+        //run script
+        $this->exec_script_newstatus($rec);
+    }
+    SQLUpdate('pt_track', $rec);
+            
+    //check to dispute 
+    if ($rec['WAIT_DAY'] && $rec['LAST_DATE'])
+    {
+        echo $rec['WAIT_DAY']."\n";
+        $dayDispite = $rec['LAST_DATE'];
+        $diff = time()- strtotime($dayDispite);
+        $days = floor($diff / (24*60*60));
+        $disp = (int)$rec['WAIT_DAY'] - $days;
+        echo $disp."\n";
+        $start_day = date("Y-m-d");
+        echo $start_day."\n";
+        if ($disp < 7 && (strtotime($start_day)>strtotime($rec['LAST_SEND_WARNING'])))
+        {                    
+            // LAST_SEND_WARNING
+            // exec script (one time on day)
+            if ($this->config['SCRIPT_DISPUTE_ID']) {
+                $params=array();
+                $params['NAME']=$rec['NAME'];
+                $params['TRACK']=$rec['TRACK'];
+                $params['TRACK_URL']=$rec['TRACK_URL'];
+                $params['DATE']=$last_status_date;
+                $params['STATUS']=$last_status_info;
+                $params['DISPUTE']=$disp;
+                runScript($this->config['SCRIPT_DISPUTE_ID'], $params);
+            } 
+            $rec['LAST_SEND_WARNING'] = date ("Y-m-d H:i:s");
+            SQLUpdate('pt_track', $rec);
+        }
+    }
+}
+
+function exec_script_newstatus($rec)
+{
+    if ($this->config['SCRIPT_NEWSTATUS_ID']) {
+        $params=array();
+        $params['NAME']=$rec['NAME'];
+        $params['TRACK']=$rec['TRACK'];
+        $params['TRACK_URL']=$rec['TRACK_URL'];
+        $params['DATE']=$rec['LAST_DATE'];
+        $params['STATUS']=$rec['LAST_STATUS'];
+        runScript($this->config['SCRIPT_NEWSTATUS_ID'], $params);
+    } 
+}
 /////////////////////////////////////////////
 
 
