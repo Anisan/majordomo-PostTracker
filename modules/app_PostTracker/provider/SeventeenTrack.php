@@ -34,11 +34,9 @@ class SeventeenTrack implements IProvider
         $res = array();
         
         $data = json_decode($server_output,true);
-        //print_r($data['dat'][0]);
         if ($data['dat'][0]['track'])
         {
             $events = $data['dat'][0]['track']['z1'];
-            //print_r($events);
             foreach($events as $event) {
                 $status = array();
                 $status['DATE_STATUS'] = strtotime($event['a']);
