@@ -191,7 +191,7 @@ function usual(&$out) {
             $status['TRACK_ID'] = $rec['ID'];
             $status['PROVIDER'] = -1;
             SQLInsert("pt_status", $status);
-            $this->exec_script_newstatus($rec);
+            $this->exec_script_newstatus($rec,"");
             $this->updateStatusInit($rec);
         }
         $this->redirect("?");
@@ -321,6 +321,7 @@ function updateStatus($provider,$rec) {
     //print_r($statuses);
     $last_status_info = "";
     $last_status_date = "";
+    $location = "";
     foreach($statuses as $status) {
         $status['TRACK_ID'] = $rec['ID'];
         $status['PROVIDER'] = $this->config['PROVIDER'];
@@ -340,6 +341,7 @@ function updateStatus($provider,$rec) {
             {
                 $last_status_info = $status['STATUS_INFO'];
                 $last_status_date = $status['DATE_STATUS'];
+                $location = $status['LOCATION'];
             }
         }
     }
@@ -351,7 +353,7 @@ function updateStatus($provider,$rec) {
         $rec['LAST_DATE'] = $last_status_date;
         $rec['LAST_STATUS'] = $last_status_info;
         //run script
-        $this->exec_script_newstatus($rec);
+        $this->exec_script_newstatus($rec,$location);
     }
     SQLUpdate('pt_track', $rec);
             
@@ -386,7 +388,7 @@ function updateStatus($provider,$rec) {
     }
 }
 
-function exec_script_newstatus($rec)
+function exec_script_newstatus($rec,$location)
 {
     if ($this->config['SCRIPT_NEWSTATUS_ID']) {
         $params=array();
@@ -395,6 +397,7 @@ function exec_script_newstatus($rec)
         $params['TRACK_URL']=$rec['TRACK_URL'];
         $params['DATE']=$rec['LAST_DATE'];
         $params['STATUS']=$rec['LAST_STATUS'];
+        $params['LOCATION']=$location;
         runScript($this->config['SCRIPT_NEWSTATUS_ID'], $params);
     } 
 }
