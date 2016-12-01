@@ -390,6 +390,7 @@ function updateStatus($provider,$rec) {
 
 function exec_script_newstatus($rec,$location)
 {
+    $this->getConfig();
     if ($this->config['SCRIPT_NEWSTATUS_ID']) {
         $params=array();
         $params['NAME']=$rec['NAME'];
