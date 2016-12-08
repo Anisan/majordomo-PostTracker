@@ -6,7 +6,7 @@ class Gdeposylka implements IProvider
     private $apikey;
     private $headers;
     
-    function Gdeposylka($apikey) {
+    function __construct($apikey) {
         $this->apikey = $apikey;
         $this->headers = array();
         $this->headers[] = "X-Authorization-Token: $apikey";
@@ -29,13 +29,21 @@ class Gdeposylka implements IProvider
         $server_output = $this->query($url);
         return json_decode($server_output,true);
     }
+        
+    public function check_error($data)
+    {
+        if ($data['result']== 'error')
+            echo $data['error']."\n";
+        if ($data['result']!= 'success') return true;
+        return false;
+    }
     
     public function getStatus($track)
     {
         $res = array();
         
         $trackers = $this->getTrackers($track);
-        if ($trackers['result']!= 'success') return $res;
+        if ($this->check_error($trackers)) return $res;
         
         $tu = $trackers['data'][0]['tracker_url'];
         
@@ -43,7 +51,7 @@ class Gdeposylka implements IProvider
         $output = $this->query($url);
         $data = json_decode($output,true);
         
-        if ($data['result']!= 'success') return $res;
+        if ($this->check_error($data)) return $res;
         
         $events = $data['data']['checkpoints'];
         foreach($events as $event) {

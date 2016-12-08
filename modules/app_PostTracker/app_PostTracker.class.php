@@ -16,7 +16,7 @@ class app_PostTracker extends module {
 *
 * @access private
 */
-function app_PostTracker() {
+function __construct() {
   $this->name="app_PostTracker";
   $this->title="PostTracker";
   $this->module_category="<#LANG_SECTION_APPLICATIONS#>";
@@ -285,6 +285,7 @@ function updateStatuses() {
         }
         
         $total=count($res);
+        
         for($i=0;$i<$total;$i++) {
             $this->updateStatus($provider,$res[$i]);
         }
@@ -360,14 +361,11 @@ function updateStatus($provider,$rec) {
     //check to dispute 
     if ($rec['WAIT_DAY'] && $rec['LAST_DATE'])
     {
-        echo $rec['WAIT_DAY']."\n";
         $dayDispite = $rec['LAST_DATE'];
         $diff = time()- strtotime($dayDispite);
         $days = floor($diff / (24*60*60));
         $disp = (int)$rec['WAIT_DAY'] - $days;
-        echo $disp."\n";
         $start_day = date("Y-m-d");
-        echo $start_day."\n";
         if ($disp < 7 && (strtotime($start_day)>strtotime($rec['LAST_SEND_WARNING'])))
         {                    
             // LAST_SEND_WARNING

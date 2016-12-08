@@ -66,8 +66,8 @@ Post Tracker<br>
 </script> 
 <fieldset>
 	<div class="form-group">
-		<label class="control-label">Provider: </label>
-		<div class="controls">
+		<label class="control-label col-lg-4">Provider: </label>
+		<div class="col-lg-7">
 			<select name="provider" class="form-control" id="provider" onchange="OnSelectConType(this)">
 				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24 (API)</option>
 				<option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka (API)</option>
@@ -79,34 +79,34 @@ Post Tracker<br>
 	<div id="set_track24">
 		<div class="form-group">
 			<label class="control-label">Api key:</label>
-			<div class="controls"><input type="text" name="tr24_apikey" value="<#TR24_APIKEY#>" class="form-control"></div>
+			<div class="col-lg-7"><input type="text" name="tr24_apikey" value="<#TR24_APIKEY#>" class="form-control"></div>
 		</div>
 		<div class="form-group">
 			<label class="control-label">Domain:</label>
-			<div class="controls"><input type="text" name="tr24_domain" value="<#TR24_DOMAIN#>" class="form-control"></div>
+			<div class="col-lg-7"><input type="text" name="tr24_domain" value="<#TR24_DOMAIN#>" class="form-control"></div>
 		</div>
 	</div>
 	<div id="set_gdeposylka">
 		<div class="form-group">
 			<label class="control-label">Api key:</label>
-			<div class="controls"><input type="text" name="gp_apikey" value="<#GP_APIKEY#>" class="form-control"></div>
+			<div class="col-lg-7"><input type="text" name="gp_apikey" value="<#GP_APIKEY#>" class="form-control"></div>
 		</div>
 	</div>
 	<div id="set_russianpost">
 		<div class="form-group">
 			<label class="control-label">Login:</label>
-			<div class="controls"><input type="text" name="rp_login" value="<#RP_LOGIN#>" class="form-control"></div>
+			<div class="col-lg-7"><input type="text" name="rp_login" value="<#RP_LOGIN#>" class="form-control"></div>
 		</div>
 		<div class="form-group">
 			<label class="control-label">Password:</label>
-			<div class="controls"><input type="text" name="rp_password" value="<#RP_PASSWORD#>" class="form-control"></div>
+			<div class="col-lg-7"><input type="text" name="rp_password" value="<#RP_PASSWORD#>" class="form-control"></div>
 		</div>
 	</div>
 <script type="text/javascript">  
 	OnSelectConType ( document.getElementById('provider') );
 </script> 
 <div class="form-group ">
-	<label class="col-lg-4 control-label" for="inputTitle">Execute new status:</label>
+	<label class="control-label" for="inputTitle">Execute new status:</label>
 	<div class="col-lg-5">
 		<select name="script_newstatus_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
 			<option value="0">
@@ -117,7 +117,7 @@ Post Tracker<br>
 	</div>
 </div> 
 <div class="form-group ">
-	<label class="col-lg-4 control-label" for="inputTitle">Execute dispute time:</label>
+	<label class="control-label" for="inputTitle">Execute dispute time:</label>
 	<div class="col-lg-5">
 		<select name="script_dispute_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
 			<option value="0">
@@ -142,7 +142,43 @@ Post Tracker<br>
 	<div class="panel-body">
 		Создайте в домашних страницах блок html кода с содержимым:<p><b>					
 		[#module name=&quot;app_PostTracker&quot;
-		#]</b></P>
+		#]</b></p>
+        <br>
+        Или через <a href="../apps/app_PostTracker.html">меню приложений</a>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		Как автоматизировать проверку треков?
+	</div>
+	<div class="panel-body">
+		Через системный cron 
+        <code style="display:block">0 8,17 * * * php /var/www/modules/app_PostTracker/check_track.php</code>
+        <br>
+        Через MJD c использованием onNewHour, либо модуля <a href='http://majordomo.smartliving.ru/forum/viewtopic.php?f=5&t=2977'>Cron</a>
+        <code style="display:block">getURL('http://localhost/modules/app_PostTracker/check_track.php',0);</code>
+
+        или так
+        
+        <code style="display:block">
+        require_once(DIR_MODULES . '/app_PostTracker/app_PostTracker.class.php');<br>
+        $PostTracker = new app_PostTracker();<br>
+        $PostTracker->updateStatuses();
+        </code>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		Параметры передаваемые в скрипты 
+	</div>
+	<div class="panel-body">
+		$params['<b>NAME</b>'] - имя<br>
+        $params['<b>TRACK</b>'] - трек номер<br>
+        $params['<b>TRACK_URL</b>'] - url<br>
+        $params['<b>DATE</b>'] - время последнего статуса<br>
+        $params['<b>STATUS</b>'] - последний статус<br>
+        $params['<b>LOCATION</b>'] - последнее местоположение<br>
+        $params['<b>DISPUTE</b>'] - дней до открытия диспута<br>
 	</div>
 </div>
 
