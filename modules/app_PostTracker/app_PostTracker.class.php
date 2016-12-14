@@ -202,22 +202,7 @@ function usual(&$out) {
         $this->redirect("?");
     }else if ($this->mode=='switch_archive') {
         $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
-        $status = array();
-        $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
-        $status['TRACK_ID'] = $rec['ID'];
-        $status['PROVIDER'] = -1;
-        if ($rec['ARCHIVE']==1)
-        {
-            $status['STATUS_INFO'] = "Unarchived (enable monitoring)";
-            $rec['ARCHIVE']=0;
-        }
-        else
-        {
-            $status['STATUS_INFO'] = "Archived (disable monitoring)";
-            $rec['ARCHIVE']=1;
-        }
-        SQLUpdate("pt_track", $rec);
-        SQLInsert("pt_status", $status);
+        $this->archive($rec);
         $this->redirect("?view_mode=".$this->view_mode);
     }else if ($this->mode=='update_statuses') {
         $this->updateStatuses();
@@ -255,8 +240,39 @@ function usual(&$out) {
                 }
             }
             $out['RESULT']=$res;
-        }    
+        }
+        $this->getConfig();
+        $out['LAST_UPDATE']=$this->config['LAST_UPDATE'];        
     }
+}
+//////////////////////////////////////////////
+function archiveByTrack($track) {
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $track . "'");
+    if ($rec)
+        $this->archive($rec);
+}
+function archiveByName($name) {
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE NAME='" . $name . "'");
+    if ($rec)
+        $this->archive($rec);
+}
+function archive($rec) {
+    $status = array();
+    $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
+    $status['TRACK_ID'] = $rec['ID'];
+    $status['PROVIDER'] = -1;
+    if ($rec['ARCHIVE']==1)
+    {
+        $status['STATUS_INFO'] = "Unarchived (enable monitoring)";
+        $rec['ARCHIVE']=0;
+    }
+    else
+    {
+        $status['STATUS_INFO'] = "Archived (disable monitoring)";
+        $rec['ARCHIVE']=1;
+    }
+    SQLUpdate("pt_track", $rec);
+    SQLInsert("pt_status", $status);
 }
 //////////////////////////////////////////////
 function updateStatuses() {
@@ -290,6 +306,8 @@ function updateStatuses() {
             $this->updateStatus($provider,$res[$i]);
         }
     }
+    $this->config['LAST_UPDATE'] = date ("Y-m-d H:i:s");
+    $this->saveConfig();
 }
 
 function updateStatusInit($rec) {
