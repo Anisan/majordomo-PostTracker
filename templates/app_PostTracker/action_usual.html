@@ -1,5 +1,5 @@
 <!--# Action Usual #-->
-[#if VIEW_MODE!="archive"#]
+[#if ARCHIVE!="1"#]
 <a href="#" class="btn btn-primary" onClick="ChangeForm(false,0);" data-toggle="modal" data-target="#track_info">
 <i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#>
 </a>
@@ -7,12 +7,12 @@
 <a href="?mode=update_statuses" class="btn btn-primary" title="Refresh">
 <i class="glyphicon glyphicon-refresh"></i> Refresh
 </a>
-<a href="?mode=archive" class="btn btn-primary" title="Archive">
+<a href="?archive_switch=1" class="btn btn-primary" title="Archive">
 <i class="glyphicon glyphicon-inbox"></i> Archive
 </a>
 <label class="control-label">Last update statuses: [#LAST_UPDATE#]</label>
 [#else#]
-<a href="?mode=active" class="btn btn-primary" title="Back">
+<a href="?archive_switch=0" class="btn btn-primary" title="Back">
 <i class="glyphicon glyphicon-arrow-left"></i> Back
 </a>
 [#endif#]
@@ -103,10 +103,16 @@
 <table class="table table-condensed table-hover" style="border-collapse:collapse;">
 	<thead>
 		<tr>
-			<th>&nbsp;</th>
-			<th>Name</th>
+			<th><a href="?sortby_post=ID">#</a><nobr>
+                [#if SORTBY="ID"#](+)[#endif#]
+                [#if SORTBY="ID DESC"#](-)[#endif#]</nobr></th>
+			<th><a href="?sortby_post=NAME">Name</a><nobr>
+                [#if SORTBY="NAME"#](+)[#endif#]
+                [#if SORTBY="NAME DESC"#](-)[#endif#]</nobr></th>
 			<th>Status</th>
-			<th>Date</th>
+			<th><a href="?sortby_post=LAST_DATE">Date</a><nobr>
+                [#if SORTBY="LAST_DATE"#](+)[#endif#]
+                [#if SORTBY="LAST_DATE DESC"#](-)[#endif#]</nobr></th>
 			<th></th>
 			<th>&nbsp;</th>
 		</tr>

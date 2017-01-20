@@ -208,11 +208,39 @@ function usual(&$out) {
         $this->updateStatuses();
         $this->redirect("?");
     }else{
-        // SEARCH RESULTS  
-        if($this->view_mode == 'archive')
-            $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=1");
+        // SEARCH RESULTS
+        global $session;        
+        $sql = "SELECT *, '' as STATUSES FROM pt_track where ";
+        global $archive_switch;
+        if (!isset($archive_switch)) {
+            $archive_switch=$session->data['post_archive'];
+        } else {
+            $session->data['post_archive']=$archive_switch;
+        }
+        if (!$archive_switch) $archive_switch=0;
+        if($archive_switch == 1)
+            $sql .= "ARCHIVE=1";
         else
-            $res=SQLSelect("SELECT *, '' as STATUSES FROM pt_track where ARCHIVE=0");
+            $sql .= "ARCHIVE=0";
+        $out['ARCHIVE']=$archive_switch;
+        // FIELDS ORDER
+        global $sortby_post;
+        if (!$sortby_post) {
+            $sortby_post=$session->data['post_sort'];
+        } else {
+            if ($session->data['post_sort']==$sortby_post) {
+                if (Is_Integer(strpos($sortby_post, ' DESC'))) {
+                    $sortby_post=str_replace(' DESC', '', $sortby_post);
+                } else {
+                    $sortby_post=$sortby_post." DESC";
+                }
+            }
+            $session->data['post_sort']=$sortby_post;
+        }
+        if (!$sortby_post) $sortby_post="ID";
+        $out['SORTBY']=$sortby_post;
+        $sql .= " ORDER BY ".$sortby_post;
+        $res=SQLSelect($sql);
         if ($res[0]['ID']) {  
             paging($res, 20, $out); // search result paging
             $total=count($res);
