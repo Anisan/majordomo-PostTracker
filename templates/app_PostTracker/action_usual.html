@@ -34,6 +34,7 @@
 					document.getElementById('track').value = rec['TRACK'];  
 					document.getElementById('track_url').value = rec['TRACK_URL'];  
 					document.getElementById('waitday').value = rec['WAIT_DAY'];  
+					document.getElementById('description').value = rec['DESCRIPTION'];  
 				}  
 			});  
 
@@ -45,6 +46,7 @@
 			document.getElementById('track').value = "";
 			document.getElementById('track_url').value = "";
 			document.getElementById('waitday').value = "50";
+			document.getElementById('description').value = "";
 		}
 	}
 </script> 
@@ -77,6 +79,11 @@
 					<div class="form-group">
 						<label class="control-label">Day to dispute</label>
 						<div class="controls"><input id="waitday" type="text" name="waitday" value="[#WAIT_DAY#]" class="form-control input"></div>
+					</div>
+					<!-- Description -->
+					<div class="form-group">
+						<label class="control-label">Description</label>
+						<div class="controls"><input id="description" type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
 					</div>
 				</div>
 				
@@ -149,7 +156,7 @@
 		<tr>
 			<td colspan="10" class="hiddenRow">
 			<div class="accordian-body collapse" id="track[#ID#]"> 
-				<h6>Track: <a href="[#TRACK_URL#]">[#TRACK#]</a></h6>
+				<h6>Track: <a href="[#TRACK_URL#]">[#TRACK#]</a>&nbsp;Description: [#DESCRIPTION#]</h6>
 				<table class="table table-condensed table-hover">
 					<thead>
 						<tr>

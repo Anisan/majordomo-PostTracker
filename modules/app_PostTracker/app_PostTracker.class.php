@@ -176,6 +176,8 @@ function usual(&$out) {
         $rec['TRACK_URL']=$track_url;
         global $waitday;
         $rec['WAIT_DAY']=$waitday;
+        global $description;
+        $rec['DESCRIPTION']=$description;
         
         if ($rec['ID']) {
             SQLUpdate(pt_track, $rec); // update
@@ -480,6 +482,7 @@ pt_track: LAST_CHECKED datetime
 pt_track: LAST_STATUS text
 pt_track: LAST_DATE datetime
 pt_track: ARCHIVE boolean NOT NULL DEFAULT FALSE
+pt_track: DESCRIPTION text
         
 pt_status: ID int(10) unsigned NOT NULL auto_increment
 pt_status: PROVIDER int(3) unsigned NOT NULL
