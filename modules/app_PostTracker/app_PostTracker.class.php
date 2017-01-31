@@ -279,27 +279,38 @@ function usual(&$out) {
 function archiveByTrack($track) {
     $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $track . "'");
     if ($rec)
-        $this->archive($rec);
+        $this->archive($rec,TRUE);
 }
 function archiveByName($name) {
     $rec = SQLSelectOne("SELECT * FROM pt_track WHERE NAME='" . $name . "'");
     if ($rec)
-        $this->archive($rec);
+        $this->archive($rec,TRUE);
 }
-function archive($rec) {
+function unarchiveByTrack($track) {
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $track . "'");
+    if ($rec)
+        $this->archive($rec,FALSE);
+}
+function unarchiveByName($name) {
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE NAME='" . $name . "'");
+    if ($rec)
+        $this->archive($rec,FALSE);
+}
+function archive($rec,$acrhive) {
+    if ($rec['ARCHIVE']==$acrhive) 
+        return;
     $status = array();
     $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
     $status['TRACK_ID'] = $rec['ID'];
     $status['PROVIDER'] = -1;
-    if ($rec['ARCHIVE']==1)
+    $rec['ARCHIVE']=$acrhive;
+    if (!$rec['ARCHIVE'])
     {
         $status['STATUS_INFO'] = "Unarchived (enable monitoring)";
-        $rec['ARCHIVE']=0;
     }
     else
     {
         $status['STATUS_INFO'] = "Archived (disable monitoring)";
-        $rec['ARCHIVE']=1;
     }
     SQLUpdate("pt_track", $rec);
     SQLInsert("pt_status", $status);
