@@ -204,7 +204,7 @@ function usual(&$out) {
         $this->redirect("?");
     }else if ($this->mode=='switch_archive') {
         $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
-        $this->archive($rec);
+        $this->archive($rec, !$rec["ARCHIVE"]);
         $this->redirect("?view_mode=".$this->view_mode);
     }else if ($this->mode=='update_statuses') {
         $this->updateStatuses();
