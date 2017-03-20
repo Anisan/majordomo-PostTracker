@@ -121,6 +121,7 @@ function admin(&$out) {
     $out['SCRIPT_NEWSTATUS_ID'] = $this->config['SCRIPT_NEWSTATUS_ID'];
     $out['SCRIPT_DISPUTE_ID'] = $this->config['SCRIPT_DISPUTE_ID'];
     $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
+    $out['POST_DEBUG'] = $this->config['POST_DEBUG'];
     if($this->data_source == 'app_PostTracker' || $this->data_source == '') {
         if($this->view_mode == 'update_settings') {
             global $provider;
@@ -139,6 +140,8 @@ function admin(&$out) {
             $this->config['SCRIPT_NEWSTATUS_ID'] = $script_newstatus_id;
             global $script_dispute_id;
             $this->config['SCRIPT_DISPUTE_ID'] = $script_dispute_id;
+            global $post_debug;
+            $this->config['POST_DEBUG'] = $post_debug;
             $this->saveConfig();
             $this->redirect("?");
         }
@@ -340,6 +343,7 @@ function updateStatuses() {
                 $provider = new SeventeenTrack();
                 break;
         }
+        $provider->debug = $this->config['POST_DEBUG'];
         
         $total=count($res);
         
@@ -371,17 +375,20 @@ function updateStatusInit($rec) {
                 $provider = new SeventeenTrack();
                 break;
     }
+    $provider->debug = $this->config['POST_DEBUG'];
     $this->updateStatus($provider,$rec);
 }
 
 function updateStatus($provider,$rec) {
-    echo $rec['TRACK']."\n";
+    $this->echonow("Track:".$rec['TRACK']."<br>", 'green');
     $statuses = $provider->getStatus($rec['TRACK']);
+    $this->echonow("Count statuses:".count($statuses)."<br>",'blue');
     // proc statuses
-    //print_r($statuses);
+    $this->debug(json_encode($statuses,JSON_UNESCAPED_UNICODE).'<br>');
     $last_status_info = "";
     $last_status_date = "";
     $location = "";
+    $new_statuses = 0;
     foreach($statuses as $status) {
         $status['TRACK_ID'] = $rec['ID'];
         $status['PROVIDER'] = $this->config['PROVIDER'];
@@ -393,7 +400,8 @@ function updateStatus($provider,$rec) {
             $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$rec['ID']." and DATE_STATUS = '" . DBSafe($status['DATE_STATUS']) . "';");
         if (!$find)
         {
-            echo 'Add new status '.$status['STATUS_INFO']."\n";
+            ++$new_statuses;
+            $this->echonow('Add new status '.$status['STATUS_INFO']." (".$status['DATE_STATUS'].")<br>",'orange');
             //add new
             SQLInsert("pt_status", $status);
             // check date
@@ -405,6 +413,7 @@ function updateStatus($provider,$rec) {
             }
         }
     }
+    $this->echonow("New statuses:".$new_statuses."<br>",'red');
     $rec['LAST_CHECKED'] = date ("Y-m-d H:i:s");
             
     //exec last new state
@@ -460,7 +469,26 @@ function exec_script_newstatus($rec,$location)
     } 
 }
 /////////////////////////////////////////////
-
+function debug($msg, $color='') {
+    if (!$this->config['POST_DEBUG']) return;
+    if ($color == '')
+        $this->echonow($msg, 'gray');
+    else
+        $this->echonow($msg, $color);
+}
+function echonow($msg, $color='') {
+  if ($color) {
+   echo '<font color="'.$color.'">';
+  }
+  echo $msg;
+  if ($color) {
+   echo '</font>';
+  }
+  echo "<script language='javascript'>window.scrollTo(0,document.body.scrollHeight);</script>";
+  echo str_repeat(' ', 16*1024);
+  flush();
+  ob_flush();
+ }
 
 /**
 * Install

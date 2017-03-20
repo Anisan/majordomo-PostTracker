@@ -127,6 +127,10 @@ Post Tracker<br>
 		</select>
 	</div>
 </div>
+<div class="form-group">
+ <label class="control-label">Debug:</label>
+ <div class="controls"><input type="checkbox" name="post_debug" value="1"[#if POST_DEBUG="1"#] checked[#endif#]></div>
+</div>
 <div class="form-actions">
 <button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
 <input type="hidden" name="view_mode" value="update_settings">

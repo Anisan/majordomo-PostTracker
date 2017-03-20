@@ -12,7 +12,8 @@ require_once(DIR_MODULES . '/app_PostTracker/app_PostTracker.class.php');
 
 // connecting to database
 $db = new mysql(DB_HOST, '', DB_USER, DB_PASSWORD, DB_NAME); 
-
+echo "<html>";
+echo "<body>"; 
 try 
 {
    $PostTracker = new app_PostTracker();
@@ -22,5 +23,6 @@ catch(Exception $e)
 {
    echo "PostTracker Error: " . $e->getMessage();
 }
-
+echo "</body>";
+echo "</html>"; 
 ?>

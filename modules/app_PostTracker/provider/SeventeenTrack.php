@@ -3,6 +3,8 @@ require_once("IProvider.php");
 
 class SeventeenTrack implements IProvider
 {
+    public $debug;
+    
     private $tracker_url = 'http://www.17track.net/restapi/handlertrack.ashx';
     private $headers = [
         'Accept'=>  '*/*',
@@ -30,6 +32,8 @@ class SeventeenTrack implements IProvider
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
 
         $server_output = curl_exec ($ch);
+        if ($this->debug)
+            echo 'SeventeenTrack:'.$server_output."<br>";
         curl_close ($ch);
         $res = array();
         

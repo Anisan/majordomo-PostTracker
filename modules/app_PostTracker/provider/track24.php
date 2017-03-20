@@ -3,6 +3,8 @@ require_once("IProvider.php");
 
 class Track24 implements IProvider
 {
+    public $debug;
+    
     private $url_api = "https://track24.ru/api/tracking.json.php?";
     private $apikey;
     private $domain;
@@ -18,6 +20,9 @@ class Track24 implements IProvider
         
         $url = $this->url_api."apiKey=".$this->apikey."&domain=".$this->domain."&code=".$track;
         $json = file_get_contents($url);
+        if ($this->debug)
+            echo 'Track24:'.$json."<br>";
+        
         $data = json_decode($json,true);
         
         $events = $data['data']['events'];

@@ -3,7 +3,8 @@ require_once("IProvider.php");
 
 class RussianPost implements IProvider
 {
-	
+	public $debug;
+    
 	function __construct($login, $password, $lang = "RUS")
 	{
 		$this->login = $login;
@@ -39,10 +40,12 @@ class RussianPost implements IProvider
 			 SOAP_1_2
 		);
 		
-		//echo $response;
+		
+        if ($this->debug)
+            echo 'RussianPost:'.$response."<br>";
 		
 		$xml = simplexml_load_string($response);
-		$error =  $xml->children('S', true)->Body->Fault;
+        $error =  $xml->children('S', true)->Body->Fault;
 		if($error)
 		{
 			$error_title = $error->Reason->Text;
@@ -55,8 +58,9 @@ class RussianPost implements IProvider
 			
 			$error_text = $error_text ? $error_text : $response;
 			$error_title = $error_title ? $error_title : "Unknown error";
-			//echo $error_title.": ".$error_text;
-            return $res;
+            if ($this->debug)
+                echo 'RussianPost:'.$error_title.": ".$error_text."<br>";
+			return $res;
 		}
 		
 		$rows = $xml->children('S', true)->Body->children('ns7', true)->getOperationHistoryResponse->children('ns3', true)->OperationHistoryData->historyRecord;
@@ -68,7 +72,6 @@ class RussianPost implements IProvider
             $status['LOCATION'] = (string) $rec->AddressParameters->DestinationAddress->Description;
             array_push($res,$status);
         }
-        //print_r($res);
         return $res;
 	}
 	

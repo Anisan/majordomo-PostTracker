@@ -2,6 +2,8 @@
 require_once("IProvider.php");
 class Gdeposylka implements IProvider
 {
+    public $debug;
+    
     private $tracker_url = 'https://gdeposylka.ru';
     private $apikey;
     private $headers;
@@ -19,6 +21,8 @@ class Gdeposylka implements IProvider
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
         $output = curl_exec ($ch);
+        if ($this->debug)
+            echo 'Gdeposylka:'.$output."<br>";
         curl_close ($ch);
         return $output;
     }
