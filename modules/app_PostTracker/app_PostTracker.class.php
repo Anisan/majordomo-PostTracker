@@ -200,17 +200,37 @@ function usual(&$out) {
             $this->updateStatusInit($rec);
         }
         $this->redirect("?");
-    }
-    else if ($this->mode=='del_track') {
+    }else if ($this->mode=='del_track') {
         SQLExec("DELETE FROM pt_track WHERE ID='" . $this->id . "'");
         SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $this->id . "'");
+        $this->redirect("?");
+    }else if ($this->mode=='del_track_info') {
+        $recStatus = SQLSelectOne("SELECT * FROM pt_status WHERE ID=".$this->id);
+        if ($recStatus['ID'])
+        {
+            $trackId = $recStatus['TRACK_ID'];
+            SQLExec("DELETE FROM pt_status WHERE ID='" . $this->id . "'");
+            $res_info=SQLSelect("SELECT * FROM pt_status WHERE TRACK_ID='" . $trackId . "' ORDER BY DATE_STATUS DESC");
+            $recTrack = SQLSelectOne("SELECT * FROM pt_track WHERE ID=".$trackId);
+            if ($res_info[0]['ID'])
+            {
+                $recTrack['LAST_DATE'] = $res_info[0]['DATE_STATUS'];
+                $recTrack['LAST_STATUS'] = $res_info[0]['STATUS_INFO'];
+            }
+            else
+            {
+                $recTrack['LAST_DATE'] = "";
+                $recTrack['LAST_STATUS'] = "";
+            }
+            SQLUpdate('pt_track', $recTrack);
+        }
         $this->redirect("?");
     }else if ($this->mode=='switch_archive') {
         $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
         $this->archive($rec, !$rec["ARCHIVE"]);
         $this->redirect("?view_mode=".$this->view_mode);
     }else if ($this->mode=='update_statuses') {
-        $this->updateStatuses();
+        $this->updateStatuses(false);
         $this->redirect("?");
     }else{
         // SEARCH RESULTS
@@ -319,7 +339,7 @@ function archive($rec,$acrhive) {
     SQLInsert("pt_status", $status);
 }
 //////////////////////////////////////////////
-function updateStatuses() {
+function updateStatuses($log=false) {
     $this->getConfig();
 
     $res=SQLSelect("SELECT * FROM pt_track where ARCHIVE=0");
@@ -343,12 +363,13 @@ function updateStatuses() {
                 $provider = new SeventeenTrack();
                 break;
         }
-        $provider->debug = $this->config['POST_DEBUG'];
+        if ($log)
+            $provider->debug = $this->config['POST_DEBUG'];
         
         $total=count($res);
         
         for($i=0;$i<$total;$i++) {
-            $this->updateStatus($provider,$res[$i]);
+            $this->updateStatus($provider,$res[$i],$log);
         }
     }
     $this->config['LAST_UPDATE'] = date ("Y-m-d H:i:s");
@@ -375,16 +396,18 @@ function updateStatusInit($rec) {
                 $provider = new SeventeenTrack();
                 break;
     }
-    $provider->debug = $this->config['POST_DEBUG'];
-    $this->updateStatus($provider,$rec);
+    $this->updateStatus($provider,$rec,false);
 }
 
-function updateStatus($provider,$rec) {
-    $this->echonow("Track:".$rec['TRACK']."<br>", 'green');
+function updateStatus($provider,$rec,$log=true) {
+    if ($log)
+        $this->echonow("Track: ".$rec['NAME'].' ('.$rec['TRACK'].")<br>", 'green');
     $statuses = $provider->getStatus($rec['TRACK']);
-    $this->echonow("Count statuses:".count($statuses)."<br>",'blue');
+    if ($log)
+        $this->echonow("Count statuses:".count($statuses)."<br>",'blue');
     // proc statuses
-    $this->debug(json_encode($statuses,JSON_UNESCAPED_UNICODE).'<br>');
+    if ($log)
+        $this->debug(json_encode($statuses,JSON_UNESCAPED_UNICODE).'<br>');
     $last_status_info = "";
     $last_status_date = "";
     $location = "";
@@ -401,7 +424,8 @@ function updateStatus($provider,$rec) {
         if (!$find)
         {
             ++$new_statuses;
-            $this->echonow('Add new status '.$status['STATUS_INFO']." (".$status['DATE_STATUS'].")<br>",'orange');
+            if ($log)
+                $this->echonow('Add new status '.$status['STATUS_INFO']." (".$status['DATE_STATUS'].")<br>",'orange');
             //add new
             SQLInsert("pt_status", $status);
             // check date
@@ -413,7 +437,8 @@ function updateStatus($provider,$rec) {
             }
         }
     }
-    $this->echonow("New statuses:".$new_statuses."<br>",'red');
+    if ($log)
+        $this->echonow("New statuses:".$new_statuses."<br>",'red');
     $rec['LAST_CHECKED'] = date ("Y-m-d H:i:s");
             
     //exec last new state
@@ -434,6 +459,8 @@ function updateStatus($provider,$rec) {
         $days = floor($diff / (24*60*60));
         $disp = (int)$rec['WAIT_DAY'] - $days;
         $start_day = date("Y-m-d");
+        if ($log)
+            $this->echonow("Days on the way:".$days.". To dispute:".$disp.".<br>");
         if ($disp < 7 && (strtotime($start_day)>strtotime($rec['LAST_SEND_WARNING'])))
         {                    
             // LAST_SEND_WARNING

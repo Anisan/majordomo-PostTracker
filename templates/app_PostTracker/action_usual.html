@@ -164,6 +164,7 @@
 							<th>Status</th>
 							<th>Location</th>
 							<th>Provider</th>
+                            <th>&nbsp;</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -180,6 +181,12 @@
 						[#if PROVIDER==2#]Russian Post[#endif#]
 						[#if PROVIDER==3#]17 Track[#endif#]
 						</td>
+                        <td>
+                            <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">
+							<i class="glyphicon glyphicon-remove"></i>
+						</a>
+						<td>
+						
 					</tr>
 					[#end STATUSES#]
 					</tbody>
