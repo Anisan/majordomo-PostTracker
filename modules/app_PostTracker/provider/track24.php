@@ -5,7 +5,7 @@ class Track24 implements IProvider
 {
     public $debug;
     
-    private $url_api = "https://track24.ru/api/tracking.json.php?";
+    private $url_api = "https://api.track24.ru/tracking.json.php?";
     private $apikey;
     private $domain;
     
