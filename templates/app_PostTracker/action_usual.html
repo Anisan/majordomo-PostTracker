@@ -145,6 +145,9 @@
 						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Archive">
 							<i class="glyphicon glyphicon-inbox"></i>
 						</a>
+						<a href="?mode=update_statuses&id=[#ID#]" class="btn btn-default btn-sm" title="Update">
+							<i class="glyphicon glyphicon-refresh"></i>
+						</a>
 						<a href="#" onClick="ChangeForm(true,[#ID#]);" class="btn btn-default btn-sm" title="Edit" data-toggle="modal" data-target="#track_info">
 							<i class="glyphicon glyphicon-edit"></i>
 						</a>
@@ -180,6 +183,7 @@
 						[#if PROVIDER==1#]Gdeposylka[#endif#]
 						[#if PROVIDER==2#]Russian Post[#endif#]
 						[#if PROVIDER==3#]17 Track[#endif#]
+						[#if PROVIDER==4#]Moyaposylka[#endif#]
 						</td>
                         <td>
                             <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">

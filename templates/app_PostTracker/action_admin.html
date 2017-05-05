@@ -59,9 +59,11 @@ Post Tracker<br>
 	    var fDiv0 = document.getElementById('set_track24');
 		var fDiv1 = document.getElementById('set_gdeposylka');
 		var fDiv2 = document.getElementById('set_russianpost');
+		var fDiv3 = document.getElementById('set_moyaposylka');
 		fDiv0.style.display = (select.value == 0) ? 'block' : 'none';
 		fDiv1.style.display = (select.value == 1) ? 'block' : 'none';
 		fDiv2.style.display = (select.value == 2) ? 'block' : 'none';
+		fDiv3.style.display = (select.value == 4) ? 'block' : 'none';
 	}
 </script> 
 <fieldset>
@@ -72,7 +74,8 @@ Post Tracker<br>
 				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24 (API)</option>
 				<option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka (API)</option>
 				<option value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post (API)</option>   
-				<option value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>   
+				<option value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>  
+				<option value="4"[#if PROVIDER=="4"#] selected[#endif#]>Moyaposylka.ru(API)</option> 				
 			</select>
 		</div>
 	</div>
@@ -101,6 +104,13 @@ Post Tracker<br>
 			<label class="control-label">Password:</label>
 			<div class="col-lg-7"><input type="text" name="rp_password" value="<#RP_PASSWORD#>" class="form-control"></div>
 		</div>
+	</div>
+	<div id="set_moyaposylka">
+		<div class="form-group">
+			<label class="control-label">Api key:</label>
+			<div class="col-lg-7"><input type="text" name="mp_apikey" value="<#MP_APIKEY#>" class="form-control"></div>
+		</div>
+	</div>
 	</div>
 <script type="text/javascript">  
 	OnSelectConType ( document.getElementById('provider') );

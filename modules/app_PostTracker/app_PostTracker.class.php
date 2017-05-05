@@ -113,6 +113,7 @@ function run() {
 function admin(&$out) {
     $this->getConfig();
     $out['GP_APIKEY'] = $this->config['GP_APIKEY'];
+    $out['MP_APIKEY'] = $this->config['MP_APIKEY'];
     $out['TR24_APIKEY'] = $this->config['TR24_APIKEY'];
     $out['TR24_DOMAIN'] = $this->config['TR24_DOMAIN'];
     $out['RP_LOGIN'] = $this->config['RP_LOGIN'];
@@ -128,6 +129,8 @@ function admin(&$out) {
             $this->config['PROVIDER'] = $provider;
             global $gp_apikey;
             $this->config['GP_APIKEY'] = $gp_apikey;
+            global $mp_apikey;
+            $this->config['MP_APIKEY'] = $mp_apikey;
             global $rp_login;
             $this->config['RP_LOGIN'] = $rp_login;
             global $rp_password;
@@ -230,7 +233,13 @@ function usual(&$out) {
         $this->archive($rec, !$rec["ARCHIVE"]);
         $this->redirect("?view_mode=".$this->view_mode);
     }else if ($this->mode=='update_statuses') {
-        $this->updateStatuses(false);
+        if ($this->id)
+        {
+            $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
+            $this->updateStatusInit($rec);
+        }
+        else
+            $this->updateStatuses(false);
         $this->redirect("?");
     }else{
         // SEARCH RESULTS
@@ -345,7 +354,23 @@ function updateStatuses($log=false) {
     $res=SQLSelect("SELECT * FROM pt_track where ARCHIVE=0");
     if ($res[0]['ID']) {  
         // init provider
-        switch ($this->config['PROVIDER']) {
+        $provider = $this->getProvider();
+        if ($log)
+            $provider->debug = $this->config['POST_DEBUG'];
+        
+        $total=count($res);
+        
+        for($i=0;$i<$total;$i++) {
+            $this->updateStatus($provider,$res[$i],$log);
+        }
+    }
+    $this->config['LAST_UPDATE'] = date ("Y-m-d H:i:s");
+    $this->saveConfig();
+}
+
+function getProvider() {
+    $this->getConfig();
+    switch ($this->config['PROVIDER']) {
             case 0: // track24
                 require_once("./modules/app_PostTracker/provider/track24.php");
                 $provider = new Track24($this->config['TR24_APIKEY'],$this->config['TR24_DOMAIN']);
@@ -362,40 +387,17 @@ function updateStatuses($log=false) {
                 require_once("./modules/app_PostTracker/provider/SeventeenTrack.php");
                 $provider = new SeventeenTrack();
                 break;
-        }
-        if ($log)
-            $provider->debug = $this->config['POST_DEBUG'];
-        
-        $total=count($res);
-        
-        for($i=0;$i<$total;$i++) {
-            $this->updateStatus($provider,$res[$i],$log);
-        }
+            case 4: // Moyaposylka
+                require_once("./modules/app_PostTracker/provider/Moyaposylka.php");
+                $provider = new Moyaposylka($this->config['MP_APIKEY']);
+                break;
     }
-    $this->config['LAST_UPDATE'] = date ("Y-m-d H:i:s");
-    $this->saveConfig();
+    return $provider;
 }
 
 function updateStatusInit($rec) {
     $this->getConfig();
-    switch ($this->config['PROVIDER']) {
-        case 0: // track24
-                require_once("./modules/app_PostTracker/provider/track24.php");
-                $provider = new Track24($this->config['TR24_APIKEY'],$this->config['TR24_DOMAIN']);
-                break;
-        case 1: // Gdeposylka
-                require_once("./modules/app_PostTracker/provider/gdeposylka.php");
-                $provider = new Gdeposylka($this->config['GP_APIKEY']);
-                break;
-        case 2: // RussianPost
-                require_once("./modules/app_PostTracker/provider/russianpost.php");
-                $provider = new RussianPost($this->config['RP_LOGIN'],$this->config['RP_PASSWORD']);
-                break;
-        case 3: // 17Track
-                require_once("./modules/app_PostTracker/provider/SeventeenTrack.php");
-                $provider = new SeventeenTrack();
-                break;
-    }
+    $provider = $this->getProvider();
     $this->updateStatus($provider,$rec,false);
 }
 
