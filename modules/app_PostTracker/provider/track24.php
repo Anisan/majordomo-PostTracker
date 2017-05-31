@@ -25,7 +25,7 @@ class Track24 implements IProvider
         
         $data = json_decode($json,true);
         
-        $events = $data['data']['groupedEvents'];
+        $events = $data['data']['groupedEvents'][0];
         //print_r($events);
         foreach($events as $event) {
             $status = array();
