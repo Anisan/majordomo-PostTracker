@@ -31,9 +31,9 @@ class Track24 implements IProvider
             $status = array();
             $status['PROVIDER_ID'] = $event['id'];
             $status['DATE_STATUS'] = strtotime($event['operationDateTime']);
-            $status['STATUS_INFO'] = $event['operationAttributeTranslated'];
+            $status['STATUS_INFO'] = $event['operationAttribute'];
             $status['LOCATION_ZIP'] = $event['operationPlacePostalCode'];
-            $status['LOCATION'] = $event['operationPlaceNameTranslated'];
+            $status['LOCATION'] = $event['operationPlaceName'];
             array_push($res,$status);
         }
         return $res;
