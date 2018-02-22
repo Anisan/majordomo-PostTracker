@@ -68,8 +68,8 @@ class RussianPost implements IProvider
             $status = array();
             $status['DATE_STATUS'] = strtotime((string) $rec->OperationParameters->OperDate);
             $status['STATUS_INFO'] = (string) $rec->OperationParameters->OperAttr->Name;
-            $status['LOCATION_ZIP'] = (string) $rec->AddressParameters->DestinationAddress->Index;
-            $status['LOCATION'] = (string) $rec->AddressParameters->DestinationAddress->Description;
+            $status['LOCATION_ZIP'] = (string) $rec->AddressParameters->OperationAddress->Index;
+            $status['LOCATION'] = (string) $rec->AddressParameters->OperationAddress->Description;
             array_push($res,$status);
         }
         return $res;
