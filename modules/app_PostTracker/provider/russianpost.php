@@ -13,6 +13,20 @@ class RussianPost implements IProvider
 		$this->client = new SoapClient("https://tracking.russianpost.ru/rtm34?wsdl",  array('trace' => 1, 'soap_version' => SOAP_1_2));
 	}
 	
+    public function addTrack($rec)
+    {
+    }
+    public function delTrack($rec)
+    {
+    }
+    public function archiveTrack($rec)
+    {
+    }
+    public function unarchiveTrack($rec)
+    {
+    }
+
+
 	public function getStatus($track)
     {
         $res = array();

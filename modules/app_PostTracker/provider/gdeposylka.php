@@ -13,7 +13,21 @@ class Gdeposylka implements IProvider
         $this->headers = array();
         $this->headers[] = "X-Authorization-Token: $apikey";
     }
-    
+
+    public function addTrack($rec)
+    {
+    }
+    public function delTrack($rec)
+    {
+    }
+    public function archiveTrack($rec)
+    {
+    }
+    public function unarchiveTrack($rec)
+    {
+    }
+
+
     public function query($url)
     {
         $ch = curl_init();

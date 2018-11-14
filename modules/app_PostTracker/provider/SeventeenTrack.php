@@ -18,6 +18,20 @@ class SeventeenTrack implements IProvider
     function __construct() {
     }
     
+    public function addTrack($rec)
+    {
+    }
+    public function delTrack($rec)
+    {
+    }
+    public function archiveTrack($rec)
+    {
+    }
+    public function unarchiveTrack($rec)
+    {
+    }
+
+
     public function getStatus($track)
     {
         $val = json_encode(

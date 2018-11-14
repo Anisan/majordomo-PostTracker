@@ -13,7 +13,20 @@ class Track24 implements IProvider
         $this->apikey = $apikey;
         $this->domain = $domain;
     }
-    
+    public function addTrack($rec)
+    {
+    }
+    public function delTrack($rec)
+    {
+    }
+    public function archiveTrack($rec)
+    {
+    }
+    public function unarchiveTrack($rec)
+    {
+    }
+
+
     public function getStatus($track)
     {
         $res = array();

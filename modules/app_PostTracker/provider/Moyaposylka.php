@@ -14,10 +14,11 @@ class Moyaposylka implements IProvider
         $this->headers[] = "X-Authorization-Token: $apikey";
     }
     
-    public function query($url, $method)
+    public function query($url, $method, $params)
     {
         if ($this->debug)
             echo 'Moyaposylka:'.$method." ".$url."<br>";
+        if (!$params)
         $params = array(
             'countryCode' => 'RU'
         );
@@ -57,6 +58,62 @@ class Moyaposylka implements IProvider
         return $carriers[0]["code"];
     }
     
+    public function addTrack($rec)
+    {
+        $track = $rec['TRACK'];
+        $carrier = $this->getCarrier($track);
+        if ($carrier == "") return;
+        
+        $url = $this->tracker_url."trackers/".$carrier."/".$track;
+        $params = array(
+            'countryCode' => 'RU',
+            'name' => $rec['NAME'],
+            'notes' => $rec['DESCRIPTION']
+        );
+        $output = $this->query($url,"POST",$params);
+        if ($this->debug) 
+            echo ($output);
+    }
+    public function delTrack($rec)
+    {
+        $track = $rec['TRACK'];
+        $carrier = $this->getCarrier($track);
+        if ($carrier == "") return;
+        
+        $url = $this->tracker_url."trackers/".$carrier."/".$track;
+        $output = $this->query($url,"DELETE");
+        if ($this->debug) 
+            echo ($output);
+        
+    }
+    
+    public function archiveTrack($rec)
+    {
+        //PUT https://moyaposylka.ru/api/v1/trackers/{carrier}/{barcode}/archive
+        $track = $rec['TRACK'];
+        $carrier = $this->getCarrier($track);
+        if ($carrier == "") return;
+        
+        $url = $this->tracker_url."trackers/".$carrier."/".$track."/archive";
+        $output = $this->query($url,"PUT");
+        if ($this->debug) 
+            echo ($output);
+    }
+    public function unarchiveTrack($rec)
+    {
+        //PUT https://moyaposylka.ru/api/v1/trackers/{carrier}/{barcode}/unarchive
+        $track = $rec['TRACK'];
+        $carrier = $this->getCarrier($track);
+        if ($carrier == "") return;
+        
+        $url = $this->tracker_url."trackers/".$carrier."/".$track."/unarchive";
+        $output = $this->query($url,"PUT");
+        if ($this->debug) 
+            echo ($output);
+    }
+
+
+    
     public function getStatus($track)
     {
         $res = array();
@@ -64,8 +121,7 @@ class Moyaposylka implements IProvider
         $carrier = $this->getCarrier($track);
         if ($carrier == "") return $res;
         
-        $url = $this->tracker_url."trackers/".$carrier."/".$track."/realtime";
-        $output = $this->query($url,"POST");
+        $url = $this->tracker_url."trackers/".$carrier."/".$track;
         $output = $this->query($url,"GET");
         $data = json_decode($output,true);
         //if ($this->check_error($data)) return $res;

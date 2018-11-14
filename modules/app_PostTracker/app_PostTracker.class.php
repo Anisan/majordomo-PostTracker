@@ -199,11 +199,14 @@ function usual(&$out) {
             $status['TRACK_ID'] = $rec['ID'];
             $status['PROVIDER'] = -1;
             SQLInsert("pt_status", $status);
+            $this->addTrackToProvider($rec);
             $this->exec_script_newstatus($rec,"");
             $this->updateStatusInit($rec);
         }
         $this->redirect("?");
     }else if ($this->mode=='del_track') {
+        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
+        $this->delTrackFromProvider($rec);
         SQLExec("DELETE FROM pt_track WHERE ID='" . $this->id . "'");
         SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $this->id . "'");
         $this->redirect("?");
@@ -336,13 +339,16 @@ function archive($rec,$acrhive) {
     $status['TRACK_ID'] = $rec['ID'];
     $status['PROVIDER'] = -1;
     $rec['ARCHIVE']=$acrhive;
+    $provider = $this->getProvider();
     if (!$rec['ARCHIVE'])
     {
         $status['STATUS_INFO'] = "Unarchived (enable monitoring)";
+        $provider->unarchiveTrack($rec);
     }
     else
     {
         $status['STATUS_INFO'] = "Archived (disable monitoring)";
+        $provider->archiveTrack($rec);
     }
     SQLUpdate("pt_track", $rec);
     SQLInsert("pt_status", $status);
@@ -394,6 +400,19 @@ function getProvider() {
     }
     return $provider;
 }
+
+function addTrackToProvider($rec) {
+    $this->getConfig();
+    $provider = $this->getProvider();
+    $provider->addTrack($rec);
+}
+
+function delTrackFromProvider($rec) {
+    $this->getConfig();
+    $provider = $this->getProvider();
+    $provider->delTrack($rec);
+}
+
 
 function updateStatusInit($rec) {
     $this->getConfig();
