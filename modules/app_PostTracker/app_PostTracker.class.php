@@ -198,6 +198,7 @@ function usual(&$out) {
             $status['STATUS_INFO'] = "Add track code to module";
             $status['TRACK_ID'] = $rec['ID'];
             $status['PROVIDER'] = -1;
+            $status['PROVIDER_ID'] = 0;
             SQLInsert("pt_status", $status);
             $this->addTrackToProvider($rec);
             $this->exec_script_newstatus($rec,"");
@@ -338,6 +339,7 @@ function archive($rec,$acrhive) {
     $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
     $status['TRACK_ID'] = $rec['ID'];
     $status['PROVIDER'] = -1;
+    $status['PROVIDER_ID'] = 0;
     $rec['ARCHIVE']=$acrhive;
     $provider = $this->getProvider();
     if (!$rec['ARCHIVE'])
