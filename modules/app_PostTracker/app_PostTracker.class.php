@@ -441,7 +441,10 @@ function updateStatus($provider,$rec,$log=true) {
         if (isset($status['PROVIDER_ID']))
             $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$rec['ID']." and PROVIDER_ID = '" . $status['PROVIDER_ID'] . "';");
         else
+        {
             $find = SQLSelectOne("SELECT * FROM pt_status WHERE TRACK_ID=".$rec['ID']." and DATE_STATUS = '" . DBSafe($status['DATE_STATUS']) . "';");
+            $status['PROVIDER_ID'] = 0;
+        }
         if (!$find)
         {
             ++$new_statuses;
@@ -573,7 +576,7 @@ pt_track: DESCRIPTION text
         
 pt_status: ID int(10) unsigned NOT NULL auto_increment
 pt_status: PROVIDER int(3) unsigned NOT NULL
-pt_status: PROVIDER_ID int(10) unsigned NOT NULL
+pt_status: PROVIDER_ID int(10) unsigned NOT NULL DEFAULT 0
 pt_status: TRACK_ID int(10) NOT NULL
 pt_status: STATUS_CODE text
 pt_status: STATUS_INFO text

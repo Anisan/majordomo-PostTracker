@@ -14,7 +14,7 @@ class Moyaposylka implements IProvider
         $this->headers[] = "X-Authorization-Token: $apikey";
     }
     
-    public function query($url, $method, $params)
+    public function query($url, $method, $params = null)
     {
         if ($this->debug)
             echo 'Moyaposylka:'.$method." ".$url."<br>";
