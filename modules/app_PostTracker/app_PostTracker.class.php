@@ -563,7 +563,7 @@ function echonow($msg, $color='') {
      */
 function dbInstall($data) {
     $data = <<<EOD
-pt_track: ID int(10) unsigned NOT NULL auto_increment
+pt_track: ID int(10) NOT NULL auto_increment
 pt_track: NAME varchar(255) NOT NULL DEFAULT ''
 pt_track: TRACK varchar(255) NOT NULL DEFAULT ''
 pt_track: TRACK_URL varchar(255) DEFAULT ''
@@ -576,9 +576,9 @@ pt_track: LAST_DATE datetime
 pt_track: ARCHIVE boolean NOT NULL DEFAULT FALSE
 pt_track: DESCRIPTION text
         
-pt_status: ID int(10) unsigned NOT NULL auto_increment
-pt_status: PROVIDER int(3) unsigned NOT NULL
-pt_status: PROVIDER_ID int(10) unsigned NOT NULL DEFAULT 0
+pt_status: ID int(10) NOT NULL auto_increment
+pt_status: PROVIDER int(3) NOT NULL
+pt_status: PROVIDER_ID int(10) NOT NULL DEFAULT 0
 pt_status: TRACK_ID int(10) NOT NULL
 pt_status: STATUS_CODE text
 pt_status: STATUS_INFO text
