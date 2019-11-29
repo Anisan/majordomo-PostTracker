@@ -161,9 +161,9 @@ function api($params) {
 			$rec['TRACK_URL']=$params['track_url'];
 			$rec['WAIT_DAY']= 50;
 			$rec['DESCRIPTION'] = '';
-			if (array_key_exists($params,'waitday'))
+			if (array_key_exists('waitday',$params))
 				$rec['WAIT_DAY']=$params['waitday'];
-			if (array_key_exists($params,'description'))
+			if (array_key_exists('description',$params))
 				$rec['DESCRIPTION']=$params['description'];
 
             $rec['CREATED'] = date ("Y-m-d H:i:s");
