@@ -152,6 +152,41 @@ function admin(&$out) {
         
     }
 }
+
+function api($params) {
+		if ($params['op']=='add') {
+		    $rec=array();
+			$rec['NAME']=$params['name'];
+			$rec['TRACK']=$params['track'];
+			$rec['TRACK_URL']=$params['track_url'];
+			$rec['WAIT_DAY']= 50;
+			$rec['DESCRIPTION'] = '';
+			if (array_key_exists($params,'waitday'))
+				$rec['WAIT_DAY']=$params['waitday'];
+			if (array_key_exists($params,'description'))
+				$rec['DESCRIPTION']=$params['description'];
+
+            $rec['CREATED'] = date ("Y-m-d H:i:s");
+            $rec['LAST_DATE'] = date ("Y-m-d H:i:s");
+            $rec['LAST_STATUS'] = "Start monitoring";
+            $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
+            $status = array();
+            $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
+            $status['STATUS_INFO'] = "Add track code to module";
+            $status['TRACK_ID'] = $rec['ID'];
+            $status['PROVIDER'] = -1;
+            $status['PROVIDER_ID'] = 0;
+            SQLInsert("pt_status", $status);
+            $this->addTrackToProvider($rec);
+            $this->exec_script_newstatus($rec,"");
+            $this->updateStatusInit($rec);
+        	   
+			return "OK";
+			exit;
+		} 
+		echo "Not support command";
+    }
+
 /**
 * FrontEnd
 *
