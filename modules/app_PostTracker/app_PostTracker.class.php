@@ -154,37 +154,48 @@ function admin(&$out) {
 }
 
 function api($params) {
-		if ($params['op']=='add') {
-		    $rec=array();
-			$rec['NAME']=$params['name'];
-			$rec['TRACK']=$params['track'];
-			$rec['TRACK_URL']=$params['track_url'];
-			$rec['WAIT_DAY']= 50;
-			$rec['DESCRIPTION'] = '';
-			if (array_key_exists('waitday',$params))
-				$rec['WAIT_DAY']=$params['waitday'];
-			if (array_key_exists('description',$params))
-				$rec['DESCRIPTION']=$params['description'];
-
-            $rec['CREATED'] = date ("Y-m-d H:i:s");
-            $rec['LAST_DATE'] = date ("Y-m-d H:i:s");
-            $rec['LAST_STATUS'] = "Start monitoring";
-            $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
-            $status = array();
-            $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
-            $status['STATUS_INFO'] = "Add track code to module";
-            $status['TRACK_ID'] = $rec['ID'];
-            $status['PROVIDER'] = -1;
-            $status['PROVIDER_ID'] = 0;
-            SQLInsert("pt_status", $status);
-            $this->addTrackToProvider($rec);
-            $this->exec_script_newstatus($rec,"");
-            $this->updateStatusInit($rec);
-        	   
-			return "OK";
-			exit;
-		} 
-		echo "Not support command";
+        if ($params['op']=='add' || $params['request'][0]=='add') {
+            if ($params['name'] == '' or $params['track']=='')
+                return "wrong request (need name and track)";
+            $this->addTrack($params['name'],$params['track'],$params['track_url'],$params['waitday'],$params['description']);
+            return "ok";
+        } 
+        if ($params['request'][0]=='del') {
+            if (!array_key_exists('id',$params))
+                $params['id'] = 0;
+            $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $params['track'] . "' OR NAME='" . $params['name'] . "' OR ID=" . $params['id']);
+            if ($rec['ID']) {
+                $this->delTrack($rec["ID"]);
+                return "ok";
+            }
+            else
+                return "not found";
+        } 
+        if ($params['request'][0]=='list') {
+            $sql = "SELECT * FROM pt_track";
+            if($params['request'][1] != "all")
+            {
+                if($params['request'][1] == "archive")
+                    $sql .= " where ARCHIVE=1";
+                else
+                    $sql .= " where ARCHIVE=0";
+            }
+            $res=SQLSelect($sql);
+            return $res;
+        }
+        if ($params['request'][0]=='statuses') {
+            if (!array_key_exists('id',$params))
+                $params['id'] = 0;
+            $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $params['track'] . "' OR NAME='" . $params['name'] . "' OR ID='" . $params['id']."'");
+            if ($rec['ID']) {
+                $sql = "SELECT * FROM pt_status WHERE TRACK_ID='" . $rec['ID'] ."'";
+                $res=SQLSelect($sql);
+                return $res;
+            }
+            else
+                return "not found";
+        }
+        return "not support command";
     }
 
 /**
@@ -207,44 +218,15 @@ function usual(&$out) {
     if ($this->mode=='archive') {$out['VIEW_MODE']="archive";$this->view_mode = "archive";}
     if ($this->mode=='active') $out['VIEW_MODE']="";
     if ($this->mode=='add_track' || $this->mode=='edit_track') { 
-        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
-        
         global $name;
-        $rec['NAME']=$name;
         global $track;
-        $rec['TRACK']=$track;
         global $track_url;
-        $rec['TRACK_URL']=$track_url;
         global $waitday;
-        $rec['WAIT_DAY']=$waitday;
         global $description;
-        $rec['DESCRIPTION']=$description;
-        
-        if ($rec['ID']) {
-            SQLUpdate(pt_track, $rec); // update
-        }
-        else{
-            $rec['CREATED'] = date ("Y-m-d H:i:s");
-            $rec['LAST_DATE'] = date ("Y-m-d H:i:s");
-            $rec['LAST_STATUS'] = "Start monitoring";
-            $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
-            $status = array();
-            $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
-            $status['STATUS_INFO'] = "Add track code to module";
-            $status['TRACK_ID'] = $rec['ID'];
-            $status['PROVIDER'] = -1;
-            $status['PROVIDER_ID'] = 0;
-            SQLInsert("pt_status", $status);
-            $this->addTrackToProvider($rec);
-            $this->exec_script_newstatus($rec,"");
-            $this->updateStatusInit($rec);
-        }
+        $this->addTrack($name,$track,$track_url,$waitday,$description);
         $this->redirect("?");
     }else if ($this->mode=='del_track') {
-        $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $this->id . "'");
-        $this->delTrackFromProvider($rec);
-        SQLExec("DELETE FROM pt_track WHERE ID='" . $this->id . "'");
-        SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $this->id . "'");
+        $this->delTrack($this->id);
         $this->redirect("?");
     }else if ($this->mode=='del_track_info') {
         $recStatus = SQLSelectOne("SELECT * FROM pt_status WHERE ID=".$this->id);
@@ -347,6 +329,49 @@ function usual(&$out) {
     }
 }
 //////////////////////////////////////////////
+function addTrack($name, $track, $track_url, $waitday, $description)
+{
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $track . "'");
+        
+    $rec['NAME']=$name;
+    $rec['TRACK']=$track;
+    $rec['TRACK_URL']=$track_url;
+    $rec['WAIT_DAY']= 50;
+    $rec['DESCRIPTION'] = '';
+    if ($waitday != null)
+        $rec['WAIT_DAY']=$waitday;
+    if ($description != null)
+        $rec['DESCRIPTION']=$description;
+
+    if ($rec['ID']) {
+        SQLUpdate(pt_track, $rec); // update
+    }
+    else{
+        $rec['CREATED'] = date ("Y-m-d H:i:s");
+        $rec['LAST_DATE'] = date ("Y-m-d H:i:s");
+        $rec['LAST_STATUS'] = "Start monitoring";
+        $rec['ID']=SQLInsert("pt_track", $rec); // adding new record
+        $status = array();
+        $status['DATE_STATUS'] = date ("Y-m-d H:i:s");;
+        $status['STATUS_INFO'] = "Add track code to module";
+        $status['TRACK_ID'] = $rec['ID'];
+        $status['PROVIDER'] = -1;
+        $status['PROVIDER_ID'] = 0;
+        SQLInsert("pt_status", $status);
+        $this->addTrackToProvider($rec);
+        $this->exec_script_newstatus($rec,"");
+        $this->updateStatusInit($rec);
+    }
+}
+
+function delTrack($id)
+{
+    $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $id . "'");
+    $this->delTrackFromProvider($rec);
+    SQLExec("DELETE FROM pt_track WHERE ID='" . $id . "'");
+    SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $id . "'");
+}
+
 function archiveByTrack($track) {
     $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $track . "'");
     if ($rec)
