@@ -1,21 +1,23 @@
 <!--# Action Usual #-->
+<div class="padding">
 [#if ARCHIVE!="1"#]
-<a href="#" class="btn btn-primary" onClick="ChangeForm(false,0);" data-toggle="modal" data-target="#track_info">
+<a href="#" class="btn btn-gold" onClick="ChangeForm(false,0);" data-toggle="modal" data-target="#track_info">
 <i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#>
 </a>
 
-<a href="?mode=update_statuses" class="btn btn-primary" title="Refresh">
+<a href="?mode=update_statuses" class="btn btn-secondary" title="Refresh">
 <i class="glyphicon glyphicon-refresh"></i> Refresh
 </a>
-<a href="?archive_switch=1" class="btn btn-primary" title="Archive">
+<a href="?archive_switch=1" class="btn btn-secondary" title="Archive">
 <i class="glyphicon glyphicon-inbox"></i> Archive
 </a>
-<label class="control-label">Last update statuses: [#LAST_UPDATE#]</label>
+<label class="control-label update">Последние обновление<br>[#LAST_UPDATE#]</label>
 [#else#]
-<a href="?archive_switch=0" class="btn btn-primary" title="Back">
+<a href="?archive_switch=0" class="btn btn-secondary" title="Back">
 <i class="glyphicon glyphicon-arrow-left"></i> Back
 </a>
 [#endif#]
+</div>
 <script type="text/javascript">
 	function ChangeForm(edit, id) {
 		document.getElementById('form_title').innerHTML  = (edit) ? 'Edit track' : 'Add track';
@@ -98,14 +100,38 @@
 		</div>
 	</div>
 <style type="text/css">
+body {padding: 10px;}
+.padding { padding: 10px 0 25px 0; }
 .panel-heading{
   border:1px solid #ccc;
   padding:2px;
   margin:0;
 }
-tr:hover{
-    background-color: gray;
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
 }
+.btn-secondary:hover {
+    color: #efefef;
+}
+.btn-gold {
+    color: #000;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+.update {
+    font-size: 11px;
+    font-weight: bold;
+    font-style: italic;
+	float: right;
+    text-align: right;
+}
+* {font-size: 14px;}
+.pointer {cursor: pointer;}
+.gray {background-color: rgba(184, 194, 198, 0.30);}
+.middle {vertical-align: middle !important;}
+.badge {font-size: 11px;background-color: #795548;border-radius: 3px;}
 </style>
  <!-- results -->
 [#if RESULT#]
@@ -119,8 +145,8 @@ tr:hover{
 			<th><a href="?sortby_post=NAME">Name</a><nobr>
                 [#if SORTBY="NAME"#](+)[#endif#]
                 [#if SORTBY="NAME DESC"#](-)[#endif#]</nobr></th>
-			<th>Status</th>
-			<th><a href="?sortby_post=LAST_DATE">Date</a><nobr>
+			<th>Статус</th>
+			<th><a href="?sortby_post=LAST_DATE">Последние обновление</a><nobr>
                 [#if SORTBY="LAST_DATE"#](+)[#endif#]
                 [#if SORTBY="LAST_DATE DESC"#](-)[#endif#]</nobr></th>
 			<th></th>
@@ -129,16 +155,16 @@ tr:hover{
 	</thead>
 	<tbody>
 	[#begin RESULT#]
-		<tr>
-			<td data-toggle="collapse" data-target="#track[#ID#]" class="accordion-toggle"><i class="glyphicon glyphicon-arrow-down"></i></td>
-			<td data-toggle="collapse" data-target="#track[#ID#]" class="accordion-toggle">[#NAME#]</td>
-			<td data-toggle="collapse" data-target="#track[#ID#]" class="accordion-toggle">[#LAST_STATUS#]</td>
-			<td  data-toggle="collapse" data-target="#track[#ID#]" class="accordion-toggle">[#LAST_DATE#]</td>
-			<td>[#if SENDING_DAY!=""#]
-						<span class="label label-default">On way [#SENDING_DAY#]</span>
+		<tr class="gray">
+			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle"><i class="glyphicon glyphicon-arrow-down"></i></td>
+			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle"><b>[#NAME#]</b></td>
+			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_STATUS#]</td>
+			<td  data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_DATE#]</td>
+			<td class="middle">[#if SENDING_DAY!=""#]
+						<span class="label label-default">дней [#SENDING_DAY#] в пути</span>
 					[#endif#]
 					[#if DISPUTE_DAY!="" && ARCHIVE=="0"#]
-						<span class="label label-[#DISPUTE_STATE#]">Day to dispute [#DISPUTE_DAY#]</span>
+						<span class="label label-[#DISPUTE_STATE#]">дней [#DISPUTE_DAY#] для спора</span>
 					[#endif#]
 					[#if ARCHIVE=="1"#]
 					<span class="label label-warning">Archived</span>
@@ -162,22 +188,25 @@ tr:hover{
 		<tr>
 			<td colspan="10" class="hiddenRow">
 			<div class="accordian-body collapse" id="track[#ID#]"> 
-				<h6>Track: <a target="_blank" href="[#TRACK_URL#]">[#TRACK#]</a>&nbsp;Description: [#DESCRIPTION#]</h6>
-				<table class="table table-condensed">
-					<thead>
+				<div style="margin-bottom: 15px; margin-top: 10px;">
+				[#if TRACK_URL!=""#]<a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a>[#else if#]<span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]
+				[#if DESCRIPTION!=""#]<span style="font-style: italic;font-size: 12px;"> — [#DESCRIPTION#]</span>[#endif#]
+				</div>
+				<table class="table-condensed" style="width: 60%;">
+					<thead style="color: #8d3133;">
 						<tr>
 							<th>Date</th>
 							<th>Status</th>
 							<th>Location</th>
 							<th>Provider</th>
-                            <th>&nbsp;</th>
+                            <th>Удалить</th>
 						</tr>
 					</thead>
 					<tbody>
 					[#begin STATUSES#]
 					<tr>
-						<td><span class="badge">[#DATE_STATUS#]</span></td>
-						<td>[#STATUS_INFO#] </td>
+						<td style="width: 15%;"><span class="badge">[#DATE_STATUS#]</span></td>
+						<td style=" width: 55%; ">[#STATUS_INFO#] </td>
 						<td>[#if LOCATION!=""#]
 							[#LOCATION#] [#LOCATION_ZIP#][#endif#]</td>
 						<td>
@@ -192,7 +221,7 @@ tr:hover{
                             <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">
 							<i class="glyphicon glyphicon-remove"></i>
 						</a>
-						<td>
+						</td>
 						
 					</tr>
 					[#end STATUSES#]
