@@ -112,8 +112,11 @@ body {padding: 10px;}
     background-color: #6c757d;
     border-color: #6c757d;
 }
+.btn-secondary:hover {
+    color: #efefef;
+}
 .btn-gold {
-    color: #212529;
+    color: #000;
     background-color: #ffc107;
     border-color: #ffc107;
 }
@@ -126,7 +129,7 @@ body {padding: 10px;}
 }
 * {font-size: 14px;}
 .pointer {cursor: pointer;}
-.gray {background-color: #eceff1;}
+.gray {background-color: rgba(184, 194, 198, 0.30);}
 .middle {vertical-align: middle !important;}
 .badge {font-size: 11px;background-color: #795548;border-radius: 3px;}
 </style>
@@ -189,7 +192,7 @@ body {padding: 10px;}
 				[#if TRACK_URL!=""#]<a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a>[#else if#]<span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]
 				[#if DESCRIPTION!=""#]<span style="font-style: italic;font-size: 12px;"> — [#DESCRIPTION#]</span>[#endif#]
 				</div>
-				<table class="table table-striped table-condensed" style="width: 60%;">
+				<table class="table-condensed" style="width: 60%;">
 					<thead style="color: #8d3133;">
 						<tr>
 							<th>Date</th>
