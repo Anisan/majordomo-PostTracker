@@ -11,7 +11,7 @@
 <a href="?archive_switch=1" class="btn btn-secondary" title="Archive">
 <i class="glyphicon glyphicon-inbox"></i> Archive
 </a>
-<label class="control-label update">Последние обновление<br>[#LAST_UPDATE#]</label>
+<label class="control-label update">Последнее обновление<br>[#LAST_UPDATE#]</label>
 [#else#]
 <a href="?archive_switch=0" class="btn btn-secondary" title="Back">
 <i class="glyphicon glyphicon-arrow-left"></i> Back
@@ -146,7 +146,7 @@ body {padding: 10px;}
                 [#if SORTBY="NAME"#](+)[#endif#]
                 [#if SORTBY="NAME DESC"#](-)[#endif#]</nobr></th>
 			<th>Статус</th>
-			<th><a href="?sortby_post=LAST_DATE">Последние обновление</a><nobr>
+			<th><a href="?sortby_post=LAST_DATE">Последнее обновление</a><nobr>
                 [#if SORTBY="LAST_DATE"#](+)[#endif#]
                 [#if SORTBY="LAST_DATE DESC"#](-)[#endif#]</nobr></th>
 			<th></th>
@@ -171,7 +171,7 @@ body {padding: 10px;}
 					[#endif#]
 		    </td>
 			<td><div class="btn-group pull-right">
-						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Archive">
+						<a href="?mode=switch_archive&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Archive">
 							<i class="glyphicon glyphicon-inbox"></i>
 						</a>
 						<a href="?mode=update_statuses&id=[#ID#]" class="btn btn-default btn-sm" title="Update">
@@ -180,7 +180,7 @@ body {padding: 10px;}
 						<a href="#" onClick="ChangeForm(true,[#ID#]);" class="btn btn-default btn-sm" title="Edit" data-toggle="modal" data-target="#track_info">
 							<i class="glyphicon glyphicon-edit"></i>
 						</a>
-						<a href="?mode=del_track&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>">
+						<a href="?mode=del_track&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>">
 							<i class="glyphicon glyphicon-remove"></i>
 						</a>
 				</div></td>
@@ -192,7 +192,7 @@ body {padding: 10px;}
 				[#if TRACK_URL!=""#]<a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a>[#else if#]<span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]
 				[#if DESCRIPTION!=""#]<span style="font-style: italic;font-size: 12px;"> — [#DESCRIPTION#]</span>[#endif#]
 				</div>
-				<table class="table-condensed" style="width: 60%;">
+				<table class="table-condensed" style="width: 70%;">
 					<thead style="color: #8d3133;">
 						<tr>
 							<th>Date</th>
@@ -210,15 +210,15 @@ body {padding: 10px;}
 						<td>[#if LOCATION!=""#]
 							[#LOCATION#] [#LOCATION_ZIP#][#endif#]</td>
 						<td>
-						[#if PROVIDER==-1#]Info[#endif#]
-						[#if PROVIDER==0#]Track24[#endif#]
-						[#if PROVIDER==1#]Gdeposylka[#endif#]
-						[#if PROVIDER==2#]Russian Post[#endif#]
-						[#if PROVIDER==3#]17 Track[#endif#]
-						[#if PROVIDER==4#]Moyaposylka[#endif#]
+						[#if PROVIDER==-1#]<img src="../templates/app_PostTracker/img/info.png" height="25px">&nbsp;Info[#endif#]
+						[#if PROVIDER==0#]<img src="../templates/app_PostTracker/img/track24.png" height="25px">Track24[#endif#]
+						[#if PROVIDER==1#]<img src="../templates/app_PostTracker/img/gdeposylka.png" height="25px">Gdeposylka[#endif#]
+						[#if PROVIDER==2#]<img src="../templates/app_PostTracker/img/russianpost.png" height="25px">Russian Post[#endif#]
+						[#if PROVIDER==3#]<img src="../templates/app_PostTracker/img/17track.png" height="25px">17 Track[#endif#]
+						[#if PROVIDER==4#]<img src="../templates/app_PostTracker/img/moyaposylka.png" height="25px">Moyaposylka[#endif#]
 						</td>
                         <td>
-                            <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">
+                            <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">
 							<i class="glyphicon glyphicon-remove"></i>
 						</a>
 						</td>

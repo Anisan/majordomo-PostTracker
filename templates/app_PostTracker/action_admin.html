@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/templates/app_PostTracker/css/bootstrap-select.min.css">
+
 <br>
 Post Tracker 	
 <button class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#about">About&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
@@ -69,12 +71,12 @@ Post Tracker
 	<div class="form-group">
 		<label class="control-label col-lg-4">Provider: </label>
 		<div class="col-lg-7">
-			<select name="provider" class="form-control" id="provider" onchange="OnSelectConType(this)">
-				<option value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24 (API)</option>
-				<option value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka (API)</option>
-				<option value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post (API)</option>   
-				<option value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>  
-				<option value="4"[#if PROVIDER=="4"#] selected[#endif#]>Moyaposylka.ru(API)</option> 				
+			<select name="provider" class="selectpicker form-control" id="provider" onchange="OnSelectConType(this)">
+				<option data-content="<img src='/templates/app_PostTracker/img/track24.png' height='25px'> Track24 (API)" value="0"[#if PROVIDER=="0"#] selected[#endif#]>Track24 (API)</option>
+				<option data-content="<img src='/templates/app_PostTracker/img/gdeposylka.png' height='25px'> Gdeposylka (API)" value="1"[#if PROVIDER=="1"#] selected[#endif#]>Gdeposylka (API)</option>
+				<option data-content="<img src='/templates/app_PostTracker/img/russianpost.png' height='25px'> Russian Post (API)" value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post (API)</option>   
+				<option data-content="<img src='/templates/app_PostTracker/img/17track.png' height='25px'> 17Track (unofficial)" value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>  
+				<option data-content="<img src='/templates/app_PostTracker/img/moyaposylka.png' height='25px'> Moyaposylka.ru(API)" value="4"[#if PROVIDER=="4"#] selected[#endif#]>Moyaposylka.ru(API)</option> 				
 			</select>
 		</div>
 	</div>
@@ -110,9 +112,12 @@ Post Tracker
 			<div class="col-lg-7"><input type="text" name="mp_apikey" value="<#MP_APIKEY#>" class="form-control"></div>
 		</div>
 	</div>
+
 <script type="text/javascript">  
 	OnSelectConType ( document.getElementById('provider') );
+    $('select').selectpicker();
 </script> 
+
 <div class="form-group ">
 	<label class="control-label" for="inputTitle">Execute new status:</label>
 	<div class="col-lg-5">

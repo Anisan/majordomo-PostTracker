@@ -195,6 +195,17 @@ function api($params) {
             else
                 return "not found";
         }
+        if ($params['request'][0]=='update') {
+            $this->updateStatuses(false);
+            if (array_key_exists('id',$params))
+            {
+                $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $params['id'] . "'");
+                $this->updateStatusInit($rec);
+            }
+            else
+                $this->updateStatuses(false);
+            return "ok";
+        }
         return "not support command";
     }
 
