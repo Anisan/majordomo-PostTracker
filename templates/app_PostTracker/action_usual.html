@@ -159,7 +159,7 @@ body {padding: 10px;}
 			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle"><i class="glyphicon glyphicon-arrow-down"></i></td>
 			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle"><b>[#NAME#]</b></td>
 			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_STATUS#]</td>
-			<td  data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_DATE#]</td>
+			<td  data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_DATE#] [#LAST_TIME#]</td>
 			<td class="middle">[#if SENDING_DAY!=""#]
 						<span class="label label-default">дней [#SENDING_DAY#] в пути</span>
 					[#endif#]
@@ -191,7 +191,14 @@ body {padding: 10px;}
 				<div style="margin-bottom: 15px; margin-top: 10px;">
 				[#if TRACK_URL!=""#]<a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a>[#else if#]<span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]
 				[#if DESCRIPTION!=""#]<span style="font-style: italic;font-size: 12px;"> — [#DESCRIPTION#]</span>[#endif#]
-				</div>
+                [#if CARRIER!=""#]&nbsp;Служба доставки:[#CARRIER#][#endif#]
+                [#if WEIGTH!=""#]&nbsp;Вес:[#WEIGTH#]кг[#endif#]
+                [#if ORIGINCOUNTRY!=""#]&nbsp;[#ORIGINCOUNTRY#]-[#endif#]
+                [#if DESTINATIONCOUNTRY!=""#][#DESTINATIONCOUNTRY#][#endif#]
+                [#if ITEM!=""#]&nbsp;[#ITEM#][#endif#]
+                [#if SENDER!=""#]&nbsp;Отправитель:[#SENDER#][#endif#]
+                [#if RECIPIENT!=""#]&nbsp;Получатель:[#RECIPIENT#][#endif#]
+                </div>
 				<table class="table-condensed" style="width: 70%;">
 					<thead style="color: #8d3133;">
 						<tr>
@@ -205,7 +212,7 @@ body {padding: 10px;}
 					<tbody>
 					[#begin STATUSES#]
 					<tr>
-						<td style="width: 15%;"><span class="badge">[#DATE_STATUS#]</span></td>
+						<td style="width: 15%;"><span class="badge">[#DATE_STATUS#] [#TIME_STATUS#]</span></td>
 						<td style=" width: 55%; ">[#STATUS_INFO#] </td>
 						<td>[#if LOCATION!=""#]
 							[#LOCATION#] [#LOCATION_ZIP#][#endif#]</td>

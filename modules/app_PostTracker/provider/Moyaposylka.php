@@ -136,7 +136,21 @@ class Moyaposylka implements IProvider
                 array_push($res,$status);
             }
         
-        return $res;
+        $result = array();
+        $result['carrier'] = $data['carrier']["code"];
+        $result['originCountry'] = $data['originCountry']["code"];
+        $result['destinationCountry'] = $data['destinationCountry']["code"];
+        if (array_key_exists('weight',$data))
+            $result['weight'] = $data['weight'];
+        if (array_key_exists('item',$data['attributes']))
+            $result['item'] = $data['attributes']['item'];
+        if (array_key_exists('sender',$data['attributes']))
+            $result['sender'] = $data['attributes']['sender'];
+        if (array_key_exists('recipient',$data['attributes']))
+            $result['recipient'] = $data['attributes']['recipient'];
+
+        $result['statuses'] = $res;
+        return $result;
     }
 }
 

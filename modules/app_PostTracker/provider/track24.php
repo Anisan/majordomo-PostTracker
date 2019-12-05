@@ -49,7 +49,8 @@ class Track24 implements IProvider
             $status['LOCATION'] = $event['operationPlaceName'];
             array_push($res,$status);
         }
-        return $res;
+        $result['statuses'] = $res;
+        return $result;
     }
 }
 

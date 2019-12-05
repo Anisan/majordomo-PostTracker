@@ -63,7 +63,8 @@ class SeventeenTrack implements IProvider
                 array_push($res,$status);
             }
         }
-        return $res;
+        $result['statuses'] = $res;
+        return $result;
     }
 }
 

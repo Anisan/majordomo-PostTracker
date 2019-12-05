@@ -313,6 +313,12 @@ function usual(&$out) {
             for($i=0;$i<$total;$i++) {
                 // some action for every record if required
                 $res_info=SQLSelect("SELECT * FROM pt_status WHERE TRACK_ID='" . $res[$i]['ID'] . "' ORDER BY DATE_STATUS");
+                $total_st=count($res_info);
+                for($j=0;$j<$total_st;$j++) {
+                    $dt = strtotime($res_info[$j]['DATE_STATUS']);
+                    $res_info[$j]['DATE_STATUS'] = date ("d-m-Y", $dt);
+                    $res_info[$j]['TIME_STATUS'] = date ("H:i", $dt);
+                }
                 $res[$i]['STATUSES'] = $res_info;
                 $dayDispite = $res[$i]['CREATED'];
                 if ($res_info[0]['ID'])
@@ -332,6 +338,9 @@ function usual(&$out) {
                     if ($disp <= 10) $res[$i]['DISPUTE_STATE'] = "danger";
                     $res[$i]['DISPUTE_DAY'] = $disp;
                 }
+                $dt = strtotime($res[$i]['LAST_DATE']);
+                $res[$i]['LAST_DATE'] = date ("d-m-Y", $dt);
+                $res[$i]['LAST_TIME'] = date ("H:i", $dt);
             }
             $out['RESULT']=$res;
         }
@@ -496,7 +505,8 @@ function updateStatusInit($rec) {
 function updateStatus($provider,$rec,$log=true) {
     if ($log)
         $this->echonow("Track: ".$rec['NAME'].' ('.$rec['TRACK'].")<br>", 'green');
-    $statuses = $provider->getStatus($rec['TRACK']);
+    $info = $provider->getStatus($rec['TRACK']);
+    $statuses = $info['statuses'];
     if ($log)
         $this->echonow("Count statuses:".count($statuses)."<br>",'blue');
     // proc statuses
@@ -537,6 +547,22 @@ function updateStatus($provider,$rec,$log=true) {
     if ($log)
         $this->echonow("New statuses:".$new_statuses."<br>",'red');
     $rec['LAST_CHECKED'] = date ("Y-m-d H:i:s");
+    
+    if (array_key_exists('carrier',$info))
+        $rec['CARRIER'] = $info['carrier'];
+    if (array_key_exists('weight',$info))
+        $rec['WEIGTH'] = $info['weight'];
+    if (array_key_exists('originCountry',$info))
+        $rec['ORIGINCOUNTRY'] = $info['originCountry'];
+    if (array_key_exists('destinationCountry',$info))
+        $rec['DESTINATIONCOUNTRY'] = $info['destinationCountry'];
+    
+    if (array_key_exists('item',$info))
+        $rec['ITEM'] = $info['item'];
+    if (array_key_exists('sender',$info))
+        $rec['SENDER'] = $info['sender'];
+    if (array_key_exists('recipient',$info))
+        $rec['RECIPIENT'] = $info['recipient'];
             
     //exec last new state
     if ($last_status_info!="")
@@ -646,6 +672,13 @@ pt_track: LAST_STATUS text
 pt_track: LAST_DATE datetime
 pt_track: ARCHIVE boolean NOT NULL DEFAULT FALSE
 pt_track: DESCRIPTION text
+pt_track: CARRIER varchar(255)
+pt_track: WEIGTH varchar(255)
+pt_track: ORIGINCOUNTRY varchar(255)
+pt_track: DESTINATIONCOUNTRY varchar(255)
+pt_track: ITEM varchar(255)
+pt_track: SENDER varchar(255)
+pt_track: RECIPIENT varchar(255)
         
 pt_status: ID int(10) NOT NULL auto_increment
 pt_status: PROVIDER int(3) NOT NULL
