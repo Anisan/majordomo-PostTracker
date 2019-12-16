@@ -152,6 +152,10 @@ class Moyaposylka implements IProvider
         $result['statuses'] = $res;
         return $result;
     }
+    
+    public function getList()
+    {
+    }
 }
 
 ?>

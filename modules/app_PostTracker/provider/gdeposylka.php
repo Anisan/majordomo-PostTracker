@@ -82,9 +82,17 @@ class Gdeposylka implements IProvider
                 array_push($res,$status);
             }
         
+        $result = array();
+        $result['carrier'] = $data['data']['courier']["slug"];
+        $result['originCountry'] = $data['data']['courier']["country_code"];
         $result['statuses'] = $res;
         return $result;
     }
+    
+    public function getList()
+    {
+    }
+    
 }
 
 ?>

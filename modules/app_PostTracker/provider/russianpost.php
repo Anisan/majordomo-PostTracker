@@ -76,8 +76,9 @@ class RussianPost implements IProvider
                 echo 'RussianPost:'.$error_title.": ".$error_text."<br>";
 			return $res;
 		}
-		
-		$rows = $xml->children('S', true)->Body->children('ns7', true)->getOperationHistoryResponse->children('ns3', true)->OperationHistoryData->historyRecord;
+		if ($this->debug)
+                echo 'RussianPost:'.$error_title.": ".$error_text."<br>";
+		$rows = $xml->children('S', true)->Body->children('ns7', true)->getOperationHistoryResponse->children('ns3', true)->
 		foreach($rows as $rec) {
             $status = array();
             $status['DATE_STATUS'] = strtotime((string) $rec->OperationParameters->OperDate);
@@ -89,6 +90,11 @@ class RussianPost implements IProvider
         $data['statuses'] = $res;
         return $data;
 	}
+    
+    public function getList()
+    {
+    }
+    
 	
 
 }

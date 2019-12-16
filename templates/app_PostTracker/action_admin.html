@@ -61,10 +61,12 @@ Post Tracker
 		var fDiv1 = document.getElementById('set_gdeposylka');
 		var fDiv2 = document.getElementById('set_russianpost');
 		var fDiv3 = document.getElementById('set_moyaposylka');
+		var fDiv4 = document.getElementById('set_trackru');
 		fDiv0.style.display = (select.value == 0) ? 'block' : 'none';
 		fDiv1.style.display = (select.value == 1) ? 'block' : 'none';
 		fDiv2.style.display = (select.value == 2) ? 'block' : 'none';
 		fDiv3.style.display = (select.value == 4) ? 'block' : 'none';
+		fDiv4.style.display = (select.value == 5) ? 'block' : 'none';
 	}
 </script> 
 <fieldset>
@@ -77,6 +79,7 @@ Post Tracker
 				<option data-content="<img src='/templates/app_PostTracker/img/russianpost.png' height='25px'> Russian Post (API)" value="2"[#if PROVIDER=="2"#] selected[#endif#]>Russian Post (API)</option>   
 				<option data-content="<img src='/templates/app_PostTracker/img/17track.png' height='25px'> 17Track (unofficial)" value="3"[#if PROVIDER=="3"#] selected[#endif#]>17Track (unofficial)</option>  
 				<option data-content="<img src='/templates/app_PostTracker/img/moyaposylka.png' height='25px'> Moyaposylka.ru(API)" value="4"[#if PROVIDER=="4"#] selected[#endif#]>Moyaposylka.ru(API)</option> 				
+				<option data-content="<img src='/templates/app_PostTracker/img/trackru.png' height='25px'> Trackru (API)" value="5"[#if PROVIDER=="5"#] selected[#endif#]>Trackru (API)</option> 				
 			</select>
 		</div>
 	</div>
@@ -110,6 +113,12 @@ Post Tracker
 		<div class="form-group">
 			<label class="control-label">Api key:</label>
 			<div class="col-lg-7"><input type="text" name="mp_apikey" value="<#MP_APIKEY#>" class="form-control"></div>
+		</div>
+	</div>
+    <div id="set_trackru">
+		<div class="form-group">
+			<label class="control-label">Api key:</label>
+			<div class="col-lg-7"><input type="text" name="trru_apikey" value="<#TRRU_APIKEY#>" class="form-control"></div>
 		</div>
 	</div>
 

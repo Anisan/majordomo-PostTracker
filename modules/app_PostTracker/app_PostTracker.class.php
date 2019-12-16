@@ -118,6 +118,7 @@ function admin(&$out) {
     $out['TR24_DOMAIN'] = $this->config['TR24_DOMAIN'];
     $out['RP_LOGIN'] = $this->config['RP_LOGIN'];
     $out['RP_PASSWORD'] = $this->config['RP_PASSWORD'];
+    $out['TRRU_APIKEY'] = $this->config['TRRU_APIKEY'];
     $out['PROVIDER'] = $this->config['PROVIDER'];
     $out['SCRIPT_NEWSTATUS_ID'] = $this->config['SCRIPT_NEWSTATUS_ID'];
     $out['SCRIPT_DISPUTE_ID'] = $this->config['SCRIPT_DISPUTE_ID'];
@@ -141,6 +142,8 @@ function admin(&$out) {
             $this->config['TR24_DOMAIN'] = $tr24_domain;
             global $script_newstatus_id;
             $this->config['SCRIPT_NEWSTATUS_ID'] = $script_newstatus_id;
+            global $trru_apikey;
+            $this->config['TRRU_APIKEY'] = $trru_apikey;
             global $script_dispute_id;
             $this->config['SCRIPT_DISPUTE_ID'] = $script_dispute_id;
             global $post_debug;
@@ -479,7 +482,12 @@ function getProvider() {
                 require_once("./modules/app_PostTracker/provider/Moyaposylka.php");
                 $provider = new Moyaposylka($this->config['MP_APIKEY']);
                 break;
+            case 5: // Moyaposylka
+                require_once("./modules/app_PostTracker/provider/trackru.php");
+                $provider = new Trackru($this->config['TRRU_APIKEY']);
+                break;
     }
+    $provider->debug = $this->config['POST_DEBUG'];
     return $provider;
 }
 
