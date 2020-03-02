@@ -188,18 +188,33 @@ body {padding: 10px;}
 		<tr>
 			<td colspan="10" class="hiddenRow">
 			<div class="accordian-body collapse" id="track[#ID#]"> 
-				<div style="margin-bottom: 15px; margin-top: 10px;">
-				[#if TRACK_URL!=""#]<a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a>[#else if#]<span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]
-				[#if DESCRIPTION!=""#]<span style="font-style: italic;font-size: 12px;"> — [#DESCRIPTION#]</span>[#endif#]
-                [#if CARRIER!=""#]&nbsp;Служба доставки:[#CARRIER#][#endif#]
-                [#if WEIGTH!=""#]&nbsp;Вес:[#WEIGTH#]кг[#endif#]
-                [#if ORIGINCOUNTRY!=""#]&nbsp;[#ORIGINCOUNTRY#]-[#endif#]
-                [#if DESTINATIONCOUNTRY!=""#][#DESTINATIONCOUNTRY#][#endif#]
-                [#if ITEM!=""#]&nbsp;[#ITEM#][#endif#]
-                [#if SENDER!=""#]&nbsp;Отправитель:[#SENDER#][#endif#]
-                [#if RECIPIENT!=""#]&nbsp;Получатель:[#RECIPIENT#][#endif#]
-                </div>
-				<table class="table-condensed" style="width: 70%;">
+                <div class="row">
+                <div class="col-md-2">
+                <div class="panel">
+                    <ul class="list-group list-group-flush">
+                      [#if TRACK_URL!=""#]
+                      <li class="list-group-item"><a style="font-size: 14px; color: #00B7EB; text-decoration: none; font-weight: 600;" target="_blank" href="[#TRACK_URL#]">#[#TRACK#]</a></li>
+                      [#else if#]
+                      <li class="list-group-item"><span style="font-size: 15px; color: #8e3133;font-weight: 600;">[#TRACK#]</span>[#endif#]</li>
+                      [#endif#]
+                      [#if CARRIER!=""#]
+                      <li class="list-group-item">Служба доставки: <img src="../templates/app_PostTracker/img/carrier/[#CARRIER#].png" alt="[#CARRIER#]" height="20px"></li>
+                      [#endif#]
+                      [#if ORIGINCOUNTRY!=""#]<li class="list-group-item"><img src="../templates/app_PostTracker/img/country/[#ORIGINCOUNTRY#].svg" alt="[#ORIGINCOUNTRY#]" height="20px">[#endif#]
+                      [#if ORIGINCOUNTRY!=""#][#if DESTINATIONCOUNTRY!=""#]/[#else if#]</li>[#endif#][#else if#]<li class="list-group-item">[#endif#]
+                      [#if DESTINATIONCOUNTRY!=""#]<img src="../templates/app_PostTracker/img/country/[#DESTINATIONCOUNTRY#].svg" alt="[#DESTINATIONCOUNTRY#]" height="20px"></li>[#endif#]
+                      [#if WEIGTH!=""#]<li class="list-group-item">Вес: [#WEIGTH#]кг</li>[#endif#]
+                      [#if ITEM!=""#]<li class="list-group-item">[#ITEM#]</li>[#endif#]
+                      [#if SENDER!=""#]<li class="list-group-item">Отправитель: [#SENDER#]</li>[#endif#]
+                      [#if RECIPIENT!=""#]<li class="list-group-item">Получатель: [#RECIPIENT#]</li>[#endif#]
+                      [#if DESCRIPTION!=""#]<li class="list-group-item">Описание: <span style="font-style: italic;font-size: 12px;">[#DESCRIPTION#]</span></li>[#endif#]
+                      </li>
+                    </ul>
+
+				    </div>
+                    </div>
+                    <div class="col-md-10">
+				<table class="table-condensed" style="width: 80%;">
 					<thead style="color: #8d3133;">
 						<tr>
 							<th>Date</th>
@@ -234,6 +249,8 @@ body {padding: 10px;}
 					[#end STATUSES#]
 					</tbody>
 				</table>
+                </div>
+                </div>
 			</div> 
 			</td>
         </tr>
