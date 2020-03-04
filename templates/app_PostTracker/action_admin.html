@@ -61,10 +61,12 @@ Post Tracker
 		var fDiv1 = document.getElementById('set_gdeposylka');
 		var fDiv2 = document.getElementById('set_russianpost');
 		var fDiv3 = document.getElementById('set_moyaposylka');
+		var fDiv4 = document.getElementById('set_trackru');
 		fDiv0.style.display = (select.value == 0) ? 'block' : 'none';
 		fDiv1.style.display = (select.value == 1) ? 'block' : 'none';
 		fDiv2.style.display = (select.value == 2) ? 'block' : 'none';
 		fDiv3.style.display = (select.value == 4) ? 'block' : 'none';
+		fDiv4.style.display = (select.value == 5) ? 'block' : 'none';
 	}
 </script> 
 <fieldset>
@@ -120,7 +122,7 @@ Post Tracker
 
 <div class="form-group ">
 	<label class="control-label" for="inputTitle">Execute new status:</label>
-	<div class="col-lg-5">
+	<div class="col-lg-7">
 		<select name="script_newstatus_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
 			<option value="0">
 			[#begin SCRIPTS#]
@@ -131,11 +133,22 @@ Post Tracker
 </div> 
 <div class="form-group ">
 	<label class="control-label" for="inputTitle">Execute dispute time:</label>
-	<div class="col-lg-5">
+	<div class="col-lg-7">
 		<select name="script_dispute_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
 			<option value="0">
 			[#begin SCRIPTS#]
 			<option value="[#ID#]"[#if ID="<#SCRIPT_DISPUTE_ID#>"#] selected[#endif#]>[#TITLE#]
+			[#end SCRIPTS#]
+		</select>
+	</div>
+</div>
+<div class="form-group ">
+	<label class="control-label" for="inputTitle">Execute add/delete/archive track:</label>
+	<div class="col-lg-7">
+		<select name="script_add_del_arch_id" class="form-control [#if ERR_SCRIPT_ID#]alert-danger[#endif#]">
+			<option value="0">
+			[#begin SCRIPTS#]
+			<option value="[#ID#]"[#if ID="<#SCRIPT_ADD_DEL_ARCH_ID#>"#] selected[#endif#]>[#TITLE#]
 			[#end SCRIPTS#]
 		</select>
 	</div>
@@ -189,13 +202,24 @@ Post Tracker
 		Параметры передаваемые в скрипты 
 	</div>
 	<div class="panel-body">
-		$params['<b>NAME</b>'] - имя<br>
+		<i>Для всех скриптов</i><br>
+        $params['<b>NAME</b>'] - имя<br>
         $params['<b>TRACK</b>'] - трек номер<br>
         $params['<b>TRACK_URL</b>'] - url<br>
+        $params['<b>DESCRIPTION</b>'] - описание<br>
+        <br>
+        <i>Для скриптов "Execute new status" и "Execute dispute time"</i><br>
         $params['<b>DATE</b>'] - время последнего статуса<br>
         $params['<b>STATUS</b>'] - последний статус<br>
         $params['<b>LOCATION</b>'] - последнее местоположение<br>
         $params['<b>DISPUTE</b>'] - дней до открытия диспута<br>
+        <br>
+        <i>Для скрипта "Execute add/delete/archive track"</i><br>
+        $params['<b>OPERATION</b>'] - операция <b>ADD DEL ARCHIVE</b><br>
+        $params['<b>ARCHIVE</b>'] - признак архивного<br>
+        $params['<b>COUNT_WORK</b>'] - количество отслеживаемых посылок<br>
+        $params['<b>COUNT_ARCHIVE</b>'] - количество посылок в архиве<br>
+        
 	</div>
 </div>
 

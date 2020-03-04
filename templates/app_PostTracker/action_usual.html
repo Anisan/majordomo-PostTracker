@@ -11,6 +11,12 @@
 <a href="?archive_switch=1" class="btn btn-secondary" title="Archive">
 <i class="glyphicon glyphicon-inbox"></i> Archive
 </a>
+[#if PROVIDER==0#]<img class= "update" src="../templates/app_PostTracker/img/track24.png" height="25px" alt="Track24">[#endif#]
+[#if PROVIDER==1#]<img class= "update" src="../templates/app_PostTracker/img/gdeposylka.png" height="25px" alt="Gdeposylka">[#endif#]
+[#if PROVIDER==2#]<img class= "update" src="../templates/app_PostTracker/img/russianpost.png" height="25px" alt="Russian Post">[#endif#]
+[#if PROVIDER==3#]<img class= "update" src="../templates/app_PostTracker/img/17track.png" height="25px" alt="17 Track">[#endif#]
+[#if PROVIDER==4#]<img class= "update" src="../templates/app_PostTracker/img/moyaposylka.png" height="25px" alt="Moyaposylka">[#endif#]
+[#if PROVIDER==5#]<img class= "update" src="../templates/app_PostTracker/img/trackru.png" height="25px" alt="Trackru">[#endif#]
 <label class="control-label update">Последнее обновление<br>[#LAST_UPDATE#]</label>
 [#else#]
 <a href="?archive_switch=0" class="btn btn-secondary" title="Back">
@@ -238,6 +244,7 @@ body {padding: 10px;}
 						[#if PROVIDER==2#]<img src="../templates/app_PostTracker/img/russianpost.png" height="25px">Russian Post[#endif#]
 						[#if PROVIDER==3#]<img src="../templates/app_PostTracker/img/17track.png" height="25px">17 Track[#endif#]
 						[#if PROVIDER==4#]<img src="../templates/app_PostTracker/img/moyaposylka.png" height="25px">Moyaposylka[#endif#]
+						[#if PROVIDER==5#]<img src="../templates/app_PostTracker/img/trackru.png" height="25px">Trackru[#endif#]
 						</td>
                         <td>
                             <a href="?mode=del_track_info&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="Del track info">

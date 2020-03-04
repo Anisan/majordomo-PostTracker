@@ -118,9 +118,11 @@ function admin(&$out) {
     $out['TR24_DOMAIN'] = $this->config['TR24_DOMAIN'];
     $out['RP_LOGIN'] = $this->config['RP_LOGIN'];
     $out['RP_PASSWORD'] = $this->config['RP_PASSWORD'];
+    $out['TRRU_APIKEY'] = $this->config['TRRU_APIKEY'];
     $out['PROVIDER'] = $this->config['PROVIDER'];
     $out['SCRIPT_NEWSTATUS_ID'] = $this->config['SCRIPT_NEWSTATUS_ID'];
     $out['SCRIPT_DISPUTE_ID'] = $this->config['SCRIPT_DISPUTE_ID'];
+    $out['SCRIPT_ADD_DEL_ARCH_ID'] = $this->config['SCRIPT_ADD_DEL_ARCH_ID'];
     $out['SCRIPTS']=SQLSelect("SELECT ID, TITLE FROM scripts ORDER BY TITLE");
     $out['POST_DEBUG'] = $this->config['POST_DEBUG'];
     if($this->data_source == 'app_PostTracker' || $this->data_source == '') {
@@ -141,8 +143,12 @@ function admin(&$out) {
             $this->config['TR24_DOMAIN'] = $tr24_domain;
             global $script_newstatus_id;
             $this->config['SCRIPT_NEWSTATUS_ID'] = $script_newstatus_id;
+            global $trru_apikey;
+            $this->config['TRRU_APIKEY'] = $trru_apikey;
             global $script_dispute_id;
             $this->config['SCRIPT_DISPUTE_ID'] = $script_dispute_id;
+            global $script_add_del_arch_id;
+            $this->config['SCRIPT_ADD_DEL_ARCH_ID'] = $script_add_del_arch_id;
             global $post_debug;
             $this->config['POST_DEBUG'] = $post_debug;
             $this->saveConfig();
@@ -345,7 +351,8 @@ function usual(&$out) {
             $out['RESULT']=$res;
         }
         $this->getConfig();
-        $out['LAST_UPDATE']=$this->config['LAST_UPDATE'];        
+        $out['LAST_UPDATE']=$this->config['LAST_UPDATE'];
+        $out['PROVIDER']=$this->config['PROVIDER'];
     }
 }
 //////////////////////////////////////////////
@@ -381,6 +388,8 @@ function addTrack($name, $track, $track_url, $waitday, $description)
         $this->addTrackToProvider($rec);
         $this->exec_script_newstatus($rec,"");
         $this->updateStatusInit($rec);
+                
+        $this->exec_script_add_del_arc($rec, "ADD");
     }
 }
 
@@ -390,6 +399,7 @@ function delTrack($id)
     $this->delTrackFromProvider($rec);
     SQLExec("DELETE FROM pt_track WHERE ID='" . $id . "'");
     SQLExec("DELETE FROM pt_status WHERE TRACK_ID='" . $id . "'");
+    $this->exec_script_add_del_arc($rec, "DEL");
 }
 
 function archiveByTrack($track) {
@@ -434,6 +444,7 @@ function archive($rec,$acrhive) {
     }
     SQLUpdate("pt_track", $rec);
     SQLInsert("pt_status", $status);
+    $this->exec_script_add_del_arc($rec, "ARCHIVE");
 }
 //////////////////////////////////////////////
 function updateStatuses($log=false) {
@@ -479,7 +490,12 @@ function getProvider() {
                 require_once("./modules/app_PostTracker/provider/Moyaposylka.php");
                 $provider = new Moyaposylka($this->config['MP_APIKEY']);
                 break;
+            case 5: // Moyaposylka
+                require_once("./modules/app_PostTracker/provider/trackru.php");
+                $provider = new Trackru($this->config['TRRU_APIKEY']);
+                break;
     }
+    $provider->debug = $this->config['POST_DEBUG'];
     return $provider;
 }
 
@@ -612,10 +628,31 @@ function exec_script_newstatus($rec,$location)
         $params['NAME']=$rec['NAME'];
         $params['TRACK']=$rec['TRACK'];
         $params['TRACK_URL']=$rec['TRACK_URL'];
+        $params['DESCRIPTION']=$rec['DESCRIPTION'];
         $params['DATE']=$rec['LAST_DATE'];
         $params['STATUS']=$rec['LAST_STATUS'];
         $params['LOCATION']=$location;
         runScript($this->config['SCRIPT_NEWSTATUS_ID'], $params);
+    } 
+}
+function exec_script_add_del_arc($rec, $operation)
+{
+    $this->getConfig();
+    if ($this->config['SCRIPT_ADD_DEL_ARCH_ID']) {
+        $params=array();
+        $params['OPERATION']=$operation;
+        $params['NAME']=$rec['NAME'];
+        $params['TRACK']=$rec['TRACK'];
+        $params['TRACK_URL']=$rec['TRACK_URL'];
+        $params['DESCRIPTION']=$rec['DESCRIPTION'];
+        $params['ARCHIVE']=$rec['ARCHIVE'];
+    
+        $res=SQLSelect("SELECT * FROM pt_track where ARCHIVE=0");
+        $params['COUNT_WORK']=count($res);
+        $res=SQLSelect("SELECT * FROM pt_track where ARCHIVE=1");
+        $params['COUNT_ARCHIVE']=count($res);
+        
+        runScript($this->config['SCRIPT_ADD_DEL_ARCH_ID'], $params);
     } 
 }
 /////////////////////////////////////////////
