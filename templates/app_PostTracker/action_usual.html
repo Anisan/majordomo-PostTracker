@@ -136,8 +136,15 @@ body {padding: 10px;}
 * {font-size: 14px;}
 .pointer {cursor: pointer;}
 .gray {background-color: rgba(184, 194, 198, 0.30);}
+.gray:hover {background-color: rgba(184, 194, 198, 0.23);}
 .middle {vertical-align: middle !important;}
-.badge {font-size: 11px;background-color: #795548;border-radius: 3px;}
+.badge {
+    font-size: 13px;
+    background-color: #6c757d;
+    border-radius: 3px;
+    font-family: monospace;
+}
+.badge span {font-size: 13px; filter: opacity(0.7); }
 </style>
  <!-- results -->
 [#if RESULT#]
@@ -167,10 +174,10 @@ body {padding: 10px;}
 			<td data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_STATUS#]</td>
 			<td  data-toggle="collapse" data-target="#track[#ID#]" class="pointer accordion-toggle">[#LAST_DATE#] [#LAST_TIME#]</td>
 			<td class="middle">[#if SENDING_DAY!=""#]
-						<span class="label label-default">дней [#SENDING_DAY#] в пути</span>
+						<span class="label label-default">[#SENDING_DAY#] дн. в пути</span>
 					[#endif#]
 					[#if DISPUTE_DAY!="" && ARCHIVE=="0"#]
-						<span class="label label-[#DISPUTE_STATE#]">дней [#DISPUTE_DAY#] для спора</span>
+						<span class="label label-[#DISPUTE_STATE#]">[#DISPUTE_DAY#] дн. для спора</span>
 					[#endif#]
 					[#if ARCHIVE=="1"#]
 					<span class="label label-warning">Archived</span>
@@ -233,7 +240,7 @@ body {padding: 10px;}
 					<tbody>
 					[#begin STATUSES#]
 					<tr>
-						<td style="width: 15%;"><span class="badge">[#DATE_STATUS#] [#TIME_STATUS#]</span></td>
+						<td style="width: 15%;"><div class="badge">[#DATE_STATUS#] <span>[#TIME_STATUS#]</span></div></td>
 						<td style=" width: 55%; ">[#STATUS_INFO#] </td>
 						<td>[#if LOCATION!=""#]
 							[#LOCATION#] [#LOCATION_ZIP#][#endif#]</td>
@@ -286,4 +293,4 @@ body {padding: 10px;}
 <div class="alert alert-danger"><#LANG_NO_RECORDS_FOUND#></div>
 </p>
 [#endif RESULT#]
-<!-- / results -->	
+<!-- / results -->
