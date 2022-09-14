@@ -165,10 +165,35 @@ function api($params) {
                 return "wrong request (need name and track)";
             $this->addTrack($params['name'],$params['track'],$params['track_url'],$params['waitday'],$params['description']);
             return "ok";
-        } 
+        }
+        if ($params['op']=='edit' || $params['request'][0]=='edit') {
+            if ($params['name'] == '' and $params['track']=='')
+                return "wrong request (need name and track)";
+            $this->addTrack($params['name'],$params['track'],$params['track_url'],$params['waitday'],$params['description']);
+            return "ok";
+        }
+        if ($params['request'][0]=='archive') {
+            if (!array_key_exists('id',$params))
+                $params['id'] = '';
+            if ($params['request'][1])
+                $params['id'] = $params['request'][1];
+            if ($params['id'] == '' and $params['track']=='')
+                return "wrong request (need id or track)";
+            $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $params['track'] . "' OR ID=" . $params['id']);
+            if ($rec['ID']) {
+                $archive = $rec['ARCHIVE'];
+                if ($archive == "1") $archive = "0"; else $archive = "1";
+                $this->archive($rec,$archive);
+                return "ok";
+            }
+            else
+                return "not found";
+        }         
         if ($params['request'][0]=='del') {
             if (!array_key_exists('id',$params))
                 $params['id'] = 0;
+            if ($params['request'][1])
+                $params['id'] = $params['request'][1];
             $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $params['track'] . "' OR NAME='" . $params['name'] . "' OR ID=" . $params['id']);
             if ($rec['ID']) {
                 $this->delTrack($rec["ID"]);
@@ -192,6 +217,8 @@ function api($params) {
         if ($params['request'][0]=='statuses') {
             if (!array_key_exists('id',$params))
                 $params['id'] = 0;
+            if ($params['request'][1])
+                $params['id'] = $params['request'][1];
             $rec = SQLSelectOne("SELECT * FROM pt_track WHERE TRACK='" . $params['track'] . "' OR NAME='" . $params['name'] . "' OR ID='" . $params['id']."'");
             if ($rec['ID']) {
                 $sql = "SELECT * FROM pt_status WHERE TRACK_ID='" . $rec['ID'] ."'";
@@ -203,11 +230,16 @@ function api($params) {
         }
         if ($params['request'][0]=='update') {
             $this->updateStatuses(false);
-            if (array_key_exists('id',$params))
+            if (!array_key_exists('id',$params))
+                $params['id'] = 0;
+            if ($params['request'][1])
+                $params['id'] = $params['request'][1];
+            if ($params['id']!=0)
             {
                 $rec = SQLSelectOne("SELECT * FROM pt_track WHERE ID='" . $params['id'] . "'");
                 $this->updateStatusInit($rec);
             }
+            
             else
                 $this->updateStatuses(false);
             return "ok";
